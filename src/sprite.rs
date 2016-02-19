@@ -10,7 +10,7 @@ use sdl2::render::{Renderer, Texture, TextureQuery};
 #[derive(Clone)]
 pub struct Sprite {
     texture: Rc<Texture>,
-    source: Rect,
+    pub source: Rect,
 }
 impl Sprite {
     /// Creates a new sprite using the given texture, and using the given
