@@ -1,30 +1,27 @@
-extern crate sdl2;
-
 use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
+
+pub type Mapper<M: 'static> = Box<Fn(&Event, &mut Vec<M>) + 'static>;
 
 /// A struct to map events to game messages.
 pub struct InputMapper<M: 'static> {
-    mappers: Vec<Box<Fn(&Event, &mut Vec<M>) + 'static>>,
+    mappers: Vec<Mapper<M>>,
 }
-impl< M: 'static> InputMapper<M> {
+
+impl<M: 'static> InputMapper<M> {
     /// Creates a new input mapper
     pub fn new() -> Self {
-        InputMapper {
-            mappers: Vec::new(),
-        }
+        InputMapper { mappers: Vec::new() }
     }
-    
+
     /// Adds a new event mapping function to the input mapper.
-    pub fn add<F>(&mut self, mapper: Box<F>) 
-            where F: Fn(&Event, &mut Vec<M>) + 'static {
+    pub fn add(&mut self, mapper: Mapper<M>) {
         self.mappers.push(mapper)
     }
-    
+
     /// Converts the given event to a set of messages.
     pub fn convert(&self, event: &Event) -> Vec<M> {
         let mut messages = Vec::new();
-        for mapper in self.mappers.iter() {
+        for mapper in &self.mappers {
             mapper(event, &mut messages);
         }
         messages

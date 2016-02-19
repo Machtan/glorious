@@ -1,5 +1,4 @@
-
-/// Creates a boxed closure that maps an SDL2 Event pattern into a game message.
+/// Creates a boxed closure that maps SDL2 events to messages.
 #[macro_export]
 macro_rules! map_event {
     ($pat:pat, $message:expr) => {{
@@ -11,8 +10,9 @@ macro_rules! map_event {
     }};
 }
 
-/// Creates a boxed closure that maps a key press with the given keycode to
-/// a specific message.
+/// Creates a boxed closure that maps key presses to messages.
+///
+/// The key is recognized by the event's `keycode`.
 #[macro_export]
 macro_rules! map_key_pressed {
     ($keycode:expr, $message:expr) => {{
@@ -26,8 +26,9 @@ macro_rules! map_key_pressed {
     }};
 }
 
-/// Creates a boxed closure that maps a key release with the given keycode to
-/// a specific message.
+/// Creates a boxed closure that maps key releases to messages.
+///
+/// The key is recognized by the event's `keycode`.
 #[macro_export]
 macro_rules! map_key_released {
     ($keycode:expr, $message:expr) => {{
@@ -41,8 +42,9 @@ macro_rules! map_key_released {
     }};
 }
 
-/// Creates a boxed closure that maps a key press with the given scancode to
-/// a specific message.
+/// Creates a boxed closure that maps key presses to messages.
+///
+/// The key is recognized by the event's `scancode`.
 #[macro_export]
 macro_rules! map_scan_pressed {
     ($scancode:expr, $message:expr) => {{
@@ -56,8 +58,9 @@ macro_rules! map_scan_pressed {
     }};
 }
 
-/// Creates a boxed closure that maps a key release with the given scancode to
-/// a specific message.
+/// Creates a boxed closure that maps key releases to messages.
+///
+/// The key is recognized by the event's `scancode`.
 #[macro_export]
 macro_rules! map_scan_released {
     ($scancode:expr, $message:expr) => {{
