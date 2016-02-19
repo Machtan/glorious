@@ -15,5 +15,5 @@ mod macros;
 pub use limiter::FrameLimiter;
 pub use sprite::Sprite;
 pub use input::InputMapper;
-pub use game::{GameBehavior, Game};
-pub use gameobject::{Behavior, GameObject};
+pub use game::Game;
+pub use gameobject::Behavior;
