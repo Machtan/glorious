@@ -45,7 +45,7 @@ macro_rules! map_key_released {
 /// a specific message.
 #[macro_export]
 macro_rules! map_scan_pressed {
-    (scan: $scancode:expr, $message:expr) => {{
+    ($scancode:expr, $message:expr) => {{
         Box::new(|event: &Event, messages: &mut Vec<Message>| {
             if let &KeyDown { scancode: Some(scan), .. } = event {
                 if scan == $scancode {
@@ -60,7 +60,7 @@ macro_rules! map_scan_pressed {
 /// a specific message.
 #[macro_export]
 macro_rules! map_scan_released {
-    (scan_up: $scancode:expr, $message:expr) => {{
+    ($scancode:expr, $message:expr) => {{
         Box::new(|event: &Event, messages: &mut Vec<Message>| {
             if let &KeyUp { scancode: Some(scan), .. } = event {
                 if scan == $scancode {
