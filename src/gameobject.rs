@@ -30,3 +30,36 @@ pub trait Behavior {
         // Do nothing by default
     }
 }
+
+impl<'a, B: Behavior> Behavior for [&'a mut B] {
+    type State = B::State;
+    type Message = B::Message;
+
+    fn initialize(&mut self, state: &mut Self::State, new_messages: &mut Vec<Self::Message>) {
+        for child in self {
+            child.initialize(state, new_messages);
+        }
+    }
+
+    fn update(&mut self, state: &mut Self::State, queue: &mut Vec<Self::Message>) {
+        for child in self {
+            child.update(state, queue);
+        }
+    }
+
+    fn handle(&mut self,
+              state: &mut Self::State,
+              messages: &[Self::Message],
+              new_messages: &mut Vec<Self::Message>) {
+        for child in self {
+            child.handle(state, messages, new_messages);
+        }
+    }
+
+    fn render(&self, state: &Self::State, renderer: &mut Renderer) {
+        for child in self {
+            child.render(state, renderer);
+        }
+    }
+
+}

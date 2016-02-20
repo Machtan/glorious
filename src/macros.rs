@@ -2,9 +2,9 @@
 #[macro_export]
 macro_rules! map_event {
     ($pat:pat, $message:expr) => {{
-        Box::new(|event: &Event, messages: &mut Vec<Message>| {
-            if let &$pat = event {
-                messages.push($message);
+        Box::new(|event: &Event, push: &mut FnMut(_)| {
+            if let $pat = *event {
+                push($message);
             }
         })
     }};
@@ -16,10 +16,10 @@ macro_rules! map_event {
 #[macro_export]
 macro_rules! map_key_pressed {
     ($keycode:expr, $message:expr) => {{
-        Box::new(|event: &Event, messages: &mut Vec<Message>| {
-            if let &KeyDown { keycode: Some(key), .. } = event {
+        Box::new(|event: &Event, push: &mut FnMut(_)| {
+            if let KeyDown { keycode: Some(key), .. } = *event {
                 if key == $keycode {
-                    messages.push($message);
+                    push($message);
                 }
             }
         })
@@ -32,10 +32,10 @@ macro_rules! map_key_pressed {
 #[macro_export]
 macro_rules! map_key_released {
     ($keycode:expr, $message:expr) => {{
-        Box::new(|event: &Event, messages: &mut Vec<Message>| {
-            if let &KeyUp { keycode: Some(key), .. } = event {
+        Box::new(|event: &Event, push: &mut FnMut(_)| {
+            if let KeyUp { keycode: Some(key), .. } = *event {
                 if key == $keycode {
-                    messages.push($message);
+                    push($message);
                 }
             }
         })
@@ -48,10 +48,10 @@ macro_rules! map_key_released {
 #[macro_export]
 macro_rules! map_scan_pressed {
     ($scancode:expr, $message:expr) => {{
-        Box::new(|event: &Event, messages: &mut Vec<Message>| {
-            if let &KeyDown { scancode: Some(scan), .. } = event {
+        Box::new(|event: &Event, push: &mut FnMut(_)| {
+            if let KeyDown { scancode: Some(scan), .. } = *event {
                 if scan == $scancode {
-                    messages.push($message);
+                    push($message);
                 }
             }
         })
@@ -64,10 +64,10 @@ macro_rules! map_scan_pressed {
 #[macro_export]
 macro_rules! map_scan_released {
     ($scancode:expr, $message:expr) => {{
-        Box::new(|event: &Event, messages: &mut Vec<Message>| {
-            if let &KeyUp { scancode: Some(scan), .. } = event {
+        Box::new(|event: &Event, push: &mut FnMut(_)| {
+            if let KeyUp { scancode: Some(scan), .. } = *event {
                 if scan == $scancode {
-                    messages.push($message);
+                    push($message);
                 }
             }
         })

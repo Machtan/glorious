@@ -9,7 +9,7 @@ use sdl2::pixels::Color;
 use sdl2::render::Renderer;
 
 use gameobject::Behavior;
-use input::InputMapper;
+use input::InputManager;
 use limiter::FrameLimiter;
 
 pub enum ExitReason {
@@ -36,80 +36,67 @@ impl<'a> Game<'a> {
         }
     }
 
-    /// Starts running the game. Close the window to quit (by default).
-    pub fn start<S, M, F>(&mut self,
-                          mut state: S,
-                          mapper: InputMapper<M>,
-                          mut objects: Vec<&mut Behavior<State = S, Message = M>>,
-                          mut on_exit: F)
-        where M: 'static,
+    /// Runs the game. Close the window to quit (by default).
+    pub fn run<B, I, F>(&mut self,
+                        mut state: B::State,
+                        manager: &I,
+                        mut behavior: &mut B,
+                        mut on_exit: F)
+        where B: Behavior,
+              I: InputManager<B::Message>,
               F: FnMut(ExitReason) -> bool
     {
-        // Initialize object state
-        let mut message_queue: Vec<M> = Vec::new();
-        let mut new_messages: Vec<M> = Vec::new();
+        // Create message queues
+        let mut message_queue = Vec::new();
+        let mut new_messages = Vec::new();
 
         // Clear the screen
         self.renderer.set_draw_color(self.clear_color);
         self.renderer.clear();
         self.renderer.present();
 
-        // Initialize the objects
-        for object in &mut objects {
-            object.initialize(&mut state, &mut message_queue);
-        }
-
+        // Initialize
+        behavior.initialize(&mut state, &mut message_queue);
         self.limiter.reset();
+
+        // Main loop
         'running: loop {
-            // Convert events to messages
+            // Handle events
             for event in self.event_pump.poll_iter() {
                 match event {
-                    Event::Quit {..} => {
+                    Event::Quit { .. } => {
                         if on_exit(ExitReason::ApplicationQuit) {
                             break 'running;
                         }
                     }
-                    e @ Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
-                        if on_exit(ExitReason::EscapePressed) {
-                            break 'running;
-                        } else {
-                            for message in mapper.convert(&e) {
-                                message_queue.push(message);
+                    e => {
+                        if let Event::KeyDown { keycode: Some(Keycode::Escape), .. } = e {
+                            if on_exit(ExitReason::EscapePressed) {
+                                break 'running;
                             }
                         }
-                    }
-                    other_event => {
-                        for message in mapper.convert(&other_event) {
-                            message_queue.push(message);
-                        }
+                        // Let the input manager push to the message queue
+                        manager.handle(&e, &mut |m| message_queue.push(m));
                     }
                 }
             }
 
             // Let the objects handle messages
-            for object in &mut objects {
-                object.handle(&mut state, &message_queue, &mut new_messages);
-            }
+            behavior.handle(&mut state, &message_queue, &mut new_messages);
 
             // Update (clear) the message queue
             mem::swap(&mut message_queue, &mut new_messages);
             new_messages.clear();
 
             // Update the objects and let them send messages
-            for object in &mut objects {
-                object.update(&mut state, &mut message_queue);
-            }
+            behavior.update(&mut state, &mut message_queue);
 
             // Clear the screen
             self.renderer.set_draw_color(self.clear_color);
             self.renderer.clear();
 
-            // Render the objects
-            for object in &objects {
-                object.render(&state, &mut self.renderer);
-            }
-
-            // Present
+            // Render
+            behavior.render(&state, &mut self.renderer);
             self.renderer.present();
 
             // Limit frame rate
