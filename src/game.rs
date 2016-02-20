@@ -27,11 +27,7 @@ pub struct Game<'a> {
 
 impl<'a> Game<'a> {
     /// Creates a new game.
-    pub fn new(fps: u32,
-               renderer: Renderer<'a>,
-               event_pump: EventPump)
-               -> Self {
-
+    pub fn new(fps: u32, renderer: Renderer<'a>, event_pump: EventPump) -> Self {
         Game {
             limiter: FrameLimiter::new(fps),
             clear_color: Color::RGBA(255, 255, 255, 255),
@@ -41,17 +37,18 @@ impl<'a> Game<'a> {
     }
 
     /// Starts running the game. Close the window to quit (by default).
-    pub fn start<S, M, F>(&mut self, 
+    pub fn start<S, M, F>(&mut self,
                           mut state: S,
-                          mapper: InputMapper<M>, 
-                          mut objects: Vec<&mut Behavior<State=S, Message=M>>,
+                          mapper: InputMapper<M>,
+                          mut objects: Vec<&mut Behavior<State = S, Message = M>>,
                           mut on_exit: F)
-                          where M: 'static, 
-                                F: FnMut(ExitReason) -> bool {
+        where M: 'static,
+              F: FnMut(ExitReason) -> bool
+    {
         // Initialize object state
         let mut message_queue: Vec<M> = Vec::new();
         let mut new_messages: Vec<M> = Vec::new();
-        
+
         // Clear the screen
         self.renderer.set_draw_color(self.clear_color);
         self.renderer.clear();
@@ -61,8 +58,6 @@ impl<'a> Game<'a> {
         for object in &mut objects {
             object.initialize(&mut state, &mut message_queue);
         }
-
-        
 
         self.limiter.reset();
         'running: loop {
@@ -93,9 +88,7 @@ impl<'a> Game<'a> {
 
             // Let the objects handle messages
             for object in &mut objects {
-                object.handle(&mut state,
-                                       &message_queue,
-                                       &mut new_messages);
+                object.handle(&mut state, &message_queue, &mut new_messages);
             }
 
             // Update (clear) the message queue

@@ -8,9 +8,7 @@ pub trait Behavior {
     type Message;
 
     /// Initializes the object when it is added to the game.
-    fn initialize(&mut self,
-                  _state: &mut Self::State,
-                  _new_messages: &mut Vec<Self::Message>) {
+    fn initialize(&mut self, _state: &mut Self::State, _new_messages: &mut Vec<Self::Message>) {
         // Do nothing by default
     }
 
