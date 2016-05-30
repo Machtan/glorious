@@ -44,11 +44,11 @@ impl<'a> Game<'a> {
                         mut on_exit_signal: F)
         where B: Behavior,
               I: InputManager<B::Message>,
-              F: FnMut(ExitSignal) -> bool,        
+              F: FnMut(ExitSignal) -> bool
     {
         // Create message queues
-        let mut message_queue = Vec::new();
-        let mut new_messages = Vec::new();
+        let mut front = Vec::new();
+        let mut back = Vec::new();
 
         // Clear the screen
         self.renderer.set_draw_color(self.clear_color);
@@ -56,7 +56,7 @@ impl<'a> Game<'a> {
         self.renderer.present();
 
         // Initialize
-        behavior.initialize(&mut state, &mut message_queue);
+        behavior.initialize(&mut state, &mut front);
         self.limiter.reset();
 
         // Main loop
@@ -76,20 +76,21 @@ impl<'a> Game<'a> {
                             }
                         }
                         // Let the input manager push to the message queue
-                        manager.handle(&e, &mut |m| message_queue.push(m));
+                        manager.handle(&e, &mut |m| front.push(m));
                     }
                 }
             }
 
             // Let the objects handle messages
-            behavior.handle(&mut state, &message_queue, &mut new_messages);
+            for m in front.drain(..) {
+                behavior.handle(&mut state, m, &mut back);
+            }
 
-            // Update (clear) the message queue
-            mem::swap(&mut message_queue, &mut new_messages);
-            new_messages.clear();
+            // Swap the message queues
+            mem::swap(&mut front, &mut back);
 
             // Update the objects and let them send messages
-            behavior.update(&mut state, &mut message_queue);
+            behavior.update(&mut state, &mut front);
 
             // Clear the screen
             self.renderer.set_draw_color(self.clear_color);

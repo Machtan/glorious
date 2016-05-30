@@ -8,7 +8,7 @@ pub trait Behavior {
     type Message;
 
     /// Initializes the object when it is added to the game.
-    fn initialize(&mut self, _state: &mut Self::State, _new_messages: &mut Vec<Self::Message>) {
+    fn initialize(&mut self, _state: &mut Self::State, _queue: &mut Vec<Self::Message>) {
         // Do nothing by default
     }
 
@@ -20,8 +20,8 @@ pub trait Behavior {
     /// Handles new messages since the last frame.
     fn handle(&mut self,
               _state: &mut Self::State,
-              _messages: &[Self::Message],
-              _new_messages: &mut Vec<Self::Message>) {
+              _message: Self::Message,
+              _queue: &mut Vec<Self::Message>) {
         // Do nothing by default
     }
 
@@ -31,13 +31,16 @@ pub trait Behavior {
     }
 }
 
-impl<'a, B: Behavior> Behavior for [&'a mut B] {
+impl<'a, B> Behavior for [&'a mut B]
+    where B: Behavior,
+          B::Message: Clone
+{
     type State = B::State;
     type Message = B::Message;
 
-    fn initialize(&mut self, state: &mut Self::State, new_messages: &mut Vec<Self::Message>) {
+    fn initialize(&mut self, state: &mut Self::State, queue: &mut Vec<Self::Message>) {
         for child in self {
-            child.initialize(state, new_messages);
+            child.initialize(state, queue);
         }
     }
 
@@ -49,10 +52,10 @@ impl<'a, B: Behavior> Behavior for [&'a mut B] {
 
     fn handle(&mut self,
               state: &mut Self::State,
-              messages: &[Self::Message],
-              new_messages: &mut Vec<Self::Message>) {
+              message: Self::Message,
+              queue: &mut Vec<Self::Message>) {
         for child in self {
-            child.handle(state, messages, new_messages);
+            child.handle(state, message.clone(), queue);
         }
     }
 
@@ -61,5 +64,4 @@ impl<'a, B: Behavior> Behavior for [&'a mut B] {
             child.render(state, renderer);
         }
     }
-
 }
