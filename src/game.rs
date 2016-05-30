@@ -12,7 +12,7 @@ use gameobject::Behavior;
 use input::InputManager;
 use limiter::FrameLimiter;
 
-pub enum ExitReason {
+pub enum ExitSignal {
     ApplicationQuit,
     EscapePressed,
 }
@@ -41,10 +41,10 @@ impl<'a> Game<'a> {
                         mut state: B::State,
                         manager: &I,
                         mut behavior: &mut B,
-                        mut on_exit: F)
+                        mut on_exit_signal: F)
         where B: Behavior,
               I: InputManager<B::Message>,
-              F: FnMut(ExitReason) -> bool
+              F: FnMut(ExitSignal) -> bool,        
     {
         // Create message queues
         let mut message_queue = Vec::new();
@@ -65,13 +65,13 @@ impl<'a> Game<'a> {
             for event in self.event_pump.poll_iter() {
                 match event {
                     Event::Quit { .. } => {
-                        if on_exit(ExitReason::ApplicationQuit) {
+                        if on_exit_signal(ExitSignal::ApplicationQuit) {
                             break 'running;
                         }
                     }
                     e => {
                         if let Event::KeyDown { keycode: Some(Keycode::Escape), .. } = e {
-                            if on_exit(ExitReason::EscapePressed) {
+                            if on_exit_signal(ExitSignal::EscapePressed) {
                                 break 'running;
                             }
                         }

@@ -1,5 +1,5 @@
 use std::rc::Rc;
-
+use std::fmt::{self, Debug};
 use sdl2::rect::Rect;
 use sdl2::render::{Renderer, Texture, TextureQuery};
 
@@ -33,5 +33,13 @@ impl Sprite {
         let (w, h) = size.unwrap_or_else(|| (self.rect.width(), self.rect.height()));
         let dest = Rect::new(x, y, w, h);
         renderer.copy(&*self.texture, Some(self.rect), Some(dest));
+    }
+}
+
+impl Debug for Sprite {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(f, "Sprite {{")?;
+        self.rect.fmt(f)?;
+        write!(f, "}}")
     }
 }
