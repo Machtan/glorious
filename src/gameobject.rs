@@ -1,7 +1,8 @@
+use std::fmt::Debug;
 use sdl2::render::Renderer;
 
 /// The behavior/logic part of an objects.
-pub trait Behavior {
+pub trait Behavior: Debug {
     /// The global game state.
     type State;
     /// The messages used by the game.
