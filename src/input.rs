@@ -58,11 +58,11 @@ impl InputPattern {
 }
 
 /// A struct to map events to game messages.
-pub struct BoxedInputMapper<M: 'static + Clone> {
+pub struct BoxedInputMapper<M: 'static> {
     mappers: Vec<Box<Fn(&Event, &mut FnMut(M))>>, 
 }
 
-impl<M: 'static + Clone> BoxedInputMapper<M> {
+impl<M: 'static> BoxedInputMapper<M> {
     /// Creates a new input mapper
     pub fn new() -> Self {
         BoxedInputMapper { mappers: Vec::new() }
@@ -73,7 +73,7 @@ impl<M: 'static + Clone> BoxedInputMapper<M> {
         self.mappers.push(mapper)
     }
     
-    pub fn add_pattern(&mut self, pattern: InputPattern, message: M) {
+    /*pub fn add_pattern(&mut self, pattern: InputPattern, message: M) {
         use sdl2::event::Event::*;
         self.mappers.push(Box::new(move |event, push| {
             match *event {
@@ -85,10 +85,10 @@ impl<M: 'static + Clone> BoxedInputMapper<M> {
                 _ => {}
             }
         }));
-    }
+    }*/
 }
 
-impl<M: 'static + Clone> InputManager<M> for BoxedInputMapper<M> {
+impl<M: 'static> InputManager<M> for BoxedInputMapper<M> {
     fn handle(&self, event: &Event, push: &mut FnMut(M)) {
         for mapper in &self.mappers {
             mapper(event, push);

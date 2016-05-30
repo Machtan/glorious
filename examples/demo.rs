@@ -12,7 +12,7 @@ use sdl2::rect::Rect;
 use sdl2_image::{LoadTexture, INIT_PNG, INIT_JPG};
 use std::rc::Rc;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 enum Message {
     StartMovingLeft,
     StopMovingLeft,
@@ -26,6 +26,7 @@ enum Message {
 
 const PLAYER_MOVE_SPEED: i32 = 4;
 const PLAYER_TEXTURE: &'static str = "assets/raccoon.png";
+#[derive(Debug)]
 struct Player {
     rect: Rect,
     vx: i32,
@@ -156,6 +157,7 @@ impl GameState {
     }
 }
 
+#[derive(Debug)]
 struct GameLogic {
     objects: Vec<Box<Behavior<Message=Message, State=GameState>>>,
 }
