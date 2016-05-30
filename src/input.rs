@@ -6,7 +6,7 @@ pub trait InputManager<M> {
     fn handle(&self, event: &Event, push: &mut FnMut(M));
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum InputPatternKind {
     Quit,
     KeyPressed { key: Keycode, is_scancode: bool, modifiers: Mod},
@@ -20,46 +20,58 @@ pub struct InputPattern {
     pub kind: InputPatternKind,
 }
 
-impl InputPattern {    
+impl InputPattern {
     fn new(window_id: u32, kind: InputPatternKind) -> InputPattern {
         InputPattern { window_id: window_id, kind: kind }
     }
-    
+
     pub fn quit() -> InputPattern {
         InputPattern::new(0, InputPatternKind::Quit)
     }
-    
+
     pub fn key_pressed(window_id: u32, key: Keycode, is_scancode: bool,
             modifiers: Option<Mod>)
             -> InputPattern {
         InputPattern::new(window_id, InputPatternKind::KeyPressed {
-            key: key, is_scancode: is_scancode, 
+            key: key, is_scancode: is_scancode,
             modifiers: modifiers.unwrap_or(Mod::empty())
         })
     }
-    
+
     pub fn key_released(window_id: u32, key: Keycode, is_scancode: bool,
             modifiers: Option<Mod>)
             -> InputPattern {
         InputPattern::new(window_id, InputPatternKind::KeyReleased {
-            key: key, is_scancode: is_scancode, 
+            key: key, is_scancode: is_scancode,
             modifiers: modifiers.unwrap_or(Mod::empty())
         })
     }
-    
+
     pub fn key_repeated(window_id: u32, key: Keycode, is_scancode: bool,
             modifiers: Option<Mod>)
             -> InputPattern {
         InputPattern::new(window_id, InputPatternKind::KeyRepeated {
-            key: key, is_scancode: is_scancode, 
+            key: key, is_scancode: is_scancode,
             modifiers: modifiers.unwrap_or(Mod::empty())
         })
     }
+
+    pub fn matches(&self, event: &Event) -> bool {
+        use sdl2::event::Event::*;
+
+        // TODO: Only tests for `Quit` events for now!
+        match *event {
+            Quit { .. } => self.kind == InputPatternKind::Quit,
+            _ => unimplemented!(),
+        }
+    }
 }
+
+// TODO: The 'static (and probably Fn) bounds make the following a lot less useful.
 
 /// A struct to map events to game messages.
 pub struct BoxedInputMapper<M: 'static> {
-    mappers: Vec<Box<Fn(&Event, &mut FnMut(M))>>, 
+    mappers: Vec<Box<Fn(&Event, &mut FnMut(M))>>,
 }
 
 impl<M: 'static> BoxedInputMapper<M> {
@@ -72,20 +84,22 @@ impl<M: 'static> BoxedInputMapper<M> {
     pub fn add(&mut self, mapper: Box<Fn(&Event, &mut FnMut(M))>) {
         self.mappers.push(mapper)
     }
-    
-    /*pub fn add_pattern(&mut self, pattern: InputPattern, message: M) {
-        use sdl2::event::Event::*;
+
+    pub fn add_pattern_with<F>(&mut self, pattern: InputPattern, func: F)
+        where F: 'static + Fn() -> M
+    {
         self.mappers.push(Box::new(move |event, push| {
-            match *event {
-                Quit { .. } => {
-                    if let InputPatternKind::Quit = pattern.kind {
-                        push(message.clone());
-                    }
-                } 
-                _ => {}
+            if pattern.matches(event) {
+                push(func());
             }
         }));
-    }*/
+    }
+}
+
+impl<M: 'static + Clone> BoxedInputMapper<M> {
+    pub fn add_pattern(&mut self, pattern: InputPattern, message: M) {
+        self.add_pattern_with(pattern, move || message.clone());
+    }
 }
 
 impl<M: 'static> InputManager<M> for BoxedInputMapper<M> {
