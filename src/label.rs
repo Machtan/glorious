@@ -81,7 +81,7 @@ impl Label {
     }
 
     #[inline]
-    pub fn font(&self) -> &Rc<Font> {
-        &self.font
+    pub fn font(&self) -> Rc<Font> {
+        self.font.clone()
     }
 }

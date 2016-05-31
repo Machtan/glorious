@@ -58,6 +58,11 @@ impl<'a> ResourceManager<'a> {
         self.fonts.borrow_mut().insert((path.to_owned().into(), point_size), font.clone());
         font
     }
+
+    #[inline]
+    pub fn renderer(&self) -> Renderer<'a> {
+        self.renderer.clone()
+    }
 }
 
 struct IterDebug<I>(I)
