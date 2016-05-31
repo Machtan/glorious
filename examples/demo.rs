@@ -43,29 +43,29 @@ impl Player {
         let texture = renderer.load_texture(&Path::new(PLAYER_TEXTURE))
             .expect("Could not load the player texture");
         Player {
-            vx: 0, vy: 0,
+            vx: 0,
+            vy: 0,
             rect: Rect::new(x, y, 32, 32),
             left_down: false,
             right_down: false,
             up_down: false,
             down_down: false,
-            sprite: Sprite::new(Rc::new(texture), None)
+            sprite: Sprite::new(Rc::new(texture), None),
         }
     }
 }
 
-impl Behavior for Player {
-    type State = GameState;
+impl Behavior<GameState> for Player {
     type Message = Message;
 
     /// Updates the object each frame.
-    fn update(&mut self, _state: &mut Self::State, _queue: &mut Vec<Self::Message>) {
+    fn update(&mut self, _state: &mut GameState, _queue: &mut Vec<Self::Message>) {
         self.rect.offset(self.vx, self.vy);
     }
 
     /// Handles new messages since the last frame.
     fn handle(&mut self,
-              _state: &mut Self::State,
+              _state: &mut GameState,
               message: Self::Message,
               _queue: &mut Vec<Self::Message>) {
         use self::Message::*;
@@ -138,10 +138,8 @@ impl Behavior for Player {
     }
 
     /// Renders the object.
-    fn render(&mut self, _state: &Self::State, renderer: &mut Renderer) {
-        self.sprite.render(renderer, self.rect.x(), self.rect.y(),
-            Some((128, 128))
-        );
+    fn render(&mut self, _state: &GameState, renderer: &mut Renderer) {
+        self.sprite.render(renderer, self.rect.x(), self.rect.y(), Some((128, 128)));
     }
 }
 
@@ -156,7 +154,7 @@ impl GameState {
 }
 
 struct GameLogic {
-    objects: Vec<Box<Behavior<Message=Message, State=GameState>>>,
+    objects: Vec<Box<Behavior<GameState, Message = Message>>>,
 }
 
 impl GameLogic {
@@ -164,18 +162,16 @@ impl GameLogic {
         GameLogic { objects: Vec::new() }
     }
 
-    pub fn add(&mut self, object: Box<Behavior<Message=Message, State=GameState>>) {
+    pub fn add(&mut self, object: Box<Behavior<GameState, Message = Message>>) {
         self.objects.push(object);
     }
 }
 
-impl Behavior for GameLogic {
-    type State = GameState;
+impl Behavior<GameState> for GameLogic {
     type Message = Message;
 
     /// Initializes the object when it is added to the game.
-    fn initialize(&mut self, state: &mut Self::State,
-            new_messages: &mut Vec<Self::Message>) {
+    fn initialize(&mut self, state: &mut GameState, new_messages: &mut Vec<Self::Message>) {
         println!("State example : {}", state.example);
 
         for object in self.objects.iter_mut() {
@@ -184,7 +180,7 @@ impl Behavior for GameLogic {
     }
 
     /// Updates the object each frame.
-    fn update(&mut self, state: &mut Self::State, queue: &mut Vec<Self::Message>) {
+    fn update(&mut self, state: &mut GameState, queue: &mut Vec<Self::Message>) {
         for object in self.objects.iter_mut() {
             object.update(state, queue);
         }
@@ -192,7 +188,7 @@ impl Behavior for GameLogic {
 
     /// Handles new messages since the last frame.
     fn handle(&mut self,
-              state: &mut Self::State,
+              state: &mut GameState,
               message: Self::Message,
               queue: &mut Vec<Self::Message>) {
         for object in self.objects.iter_mut() {
@@ -201,7 +197,7 @@ impl Behavior for GameLogic {
     }
 
     /// Renders the object.
-    fn render(&mut self, state: &Self::State, renderer: &mut Renderer) {
+    fn render(&mut self, state: &GameState, renderer: &mut Renderer) {
         for object in &mut self.objects {
             object.render(state, renderer);
         }
@@ -257,15 +253,11 @@ fn main() {
     let event_pump = sdl_context.event_pump().unwrap();
 
     const MAX_FPS: u32 = 60;
-    let mut game = Game::new(
-        MAX_FPS, renderer, event_pump
-    );
+    let mut game = Game::new(MAX_FPS, renderer, event_pump);
 
     game.run(state, &mapper, &mut logic, |signal| {
         match signal {
-            ExitSignal::ApplicationQuit => {
-                true
-            }
+            ExitSignal::ApplicationQuit => true,
             ExitSignal::EscapePressed => {
                 println!("Escape exit signal sent!");
                 false

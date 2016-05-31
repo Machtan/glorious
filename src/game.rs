@@ -35,12 +35,12 @@ impl<'a> Game<'a> {
     }
 
     /// Runs the game. Close the window to quit (by default).
-    pub fn run<B, I, F>(&mut self,
-                        mut state: B::State,
-                        manager: &I,
-                        mut behavior: &mut B,
-                        mut on_exit_signal: F)
-        where B: Behavior,
+    pub fn run<B, S, I, F>(&mut self,
+                           mut state: S,
+                           manager: &I,
+                           mut behavior: &mut B,
+                           mut on_exit_signal: F)
+        where B: Behavior<S>,
               I: InputManager<B::Message>,
               F: FnMut(ExitSignal) -> bool
     {
