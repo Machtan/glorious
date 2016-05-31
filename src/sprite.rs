@@ -1,13 +1,16 @@
 use std::rc::Rc;
 use std::fmt::{self, Debug};
 use sdl2::rect::Rect;
-use sdl2::render::{Renderer, Texture, TextureQuery};
+use sdl2::render::{Texture, TextureQuery};
+
+use misc::Ellipsis;
+use renderer::Renderer;
 
 /// A rectangular section of a texture.
 #[derive(Clone)]
 pub struct Sprite {
-    texture: Rc<Texture>,
     pub rect: Rect,
+    texture: Rc<Texture>,
 }
 
 impl Sprite {
@@ -31,15 +34,16 @@ impl Sprite {
     /// If `size` is not `None`, the sprite will be scaled to that size.
     pub fn render(&self, renderer: &mut Renderer, x: i32, y: i32, size: Option<(u32, u32)>) {
         let (w, h) = size.unwrap_or_else(|| (self.rect.width(), self.rect.height()));
-        let dest = Rect::new(x, y, w, h);
-        renderer.copy(&*self.texture, Some(self.rect), Some(dest));
+        let dst = Rect::new(x, y, w, h);
+        renderer.copy(&*self.texture, Some(self.rect), Some(dst));
     }
 }
 
 impl Debug for Sprite {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        write!(f, "Sprite {{")?;
-        self.rect.fmt(f)?;
-        write!(f, "}}")
+        f.debug_struct("Sprite")
+            .field("rect", &self.rect)
+            .field("texture", &Ellipsis)
+            .finish()
     }
 }

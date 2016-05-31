@@ -11,12 +11,15 @@ mod game;
 mod gameobject;
 #[macro_use]
 mod macros;
+mod misc;
+mod renderer;
 mod resources;
 
-pub use limiter::FrameLimiter;
-pub use sprite::Sprite;
-pub use label::Label;
-pub use input::{InputManager, InputPattern, InputPatternKind, BoxedInputMapper};
 pub use game::{Game, ExitSignal};
 pub use gameobject::Behavior;
+pub use input::{InputManager, InputPattern, InputPatternKind, BoxedInputMapper};
+pub use label::Label;
+pub use limiter::FrameLimiter;
+pub use renderer::Renderer;
 pub use resources::ResourceManager;
+pub use sprite::Sprite;

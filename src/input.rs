@@ -53,7 +53,7 @@ impl InputPattern {
                           InputPatternKind::KeyPressed {
                               key: key,
                               is_scancode: is_scancode,
-                              modifiers: modifiers.unwrap_or(Mod::empty()),
+                              modifiers: modifiers.unwrap_or_else(Mod::empty),
                           })
     }
 
@@ -66,7 +66,7 @@ impl InputPattern {
                           InputPatternKind::KeyReleased {
                               key: key,
                               is_scancode: is_scancode,
-                              modifiers: modifiers.unwrap_or(Mod::empty()),
+                              modifiers: modifiers.unwrap_or_else(Mod::empty),
                           })
     }
 
@@ -79,7 +79,7 @@ impl InputPattern {
                           InputPatternKind::KeyRepeated {
                               key: key,
                               is_scancode: is_scancode,
-                              modifiers: modifiers.unwrap_or(Mod::empty()),
+                              modifiers: modifiers.unwrap_or_else(Mod::empty),
                           })
     }
 

@@ -1,16 +1,14 @@
-extern crate sdl2;
-
 use std::mem;
 
 use sdl2::event::Event;
 use sdl2::EventPump;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use sdl2::render::Renderer;
 
 use gameobject::Behavior;
 use input::InputManager;
 use limiter::FrameLimiter;
+use renderer::Renderer;
 
 pub enum ExitSignal {
     ApplicationQuit,

@@ -1,4 +1,4 @@
-use sdl2::render::Renderer;
+use renderer::Renderer;
 
 /// The behavior/logic part of an objects.
 pub trait Behavior {

@@ -4,13 +4,12 @@ extern crate sdl2;
 extern crate sdl2_image;
 
 use std::path::Path;
-use glorious::{BoxedInputMapper, Sprite};
-use glorious::{Game, ExitSignal, Behavior};
-use sdl2::keyboard::{Keycode, Scancode};
-use sdl2::render::Renderer;
-use sdl2::rect::Rect;
-use sdl2_image::{LoadTexture, INIT_PNG, INIT_JPG};
 use std::rc::Rc;
+
+use glorious::{Behavior, BoxedInputMapper, ExitSignal, Game, Renderer, Sprite};
+use sdl2::keyboard::{Keycode, Scancode};
+use sdl2::rect::Rect;
+use sdl2_image::{INIT_PNG, INIT_JPG};
 
 #[derive(Clone, Copy, Debug)]
 enum Message {
@@ -175,7 +174,7 @@ impl Behavior for GameLogic {
     type Message = Message;
 
     /// Initializes the object when it is added to the game.
-    fn initialize(&mut self, state: &mut Self::State, 
+    fn initialize(&mut self, state: &mut Self::State,
             new_messages: &mut Vec<Self::Message>) {
         println!("State example : {}", state.example);
 
@@ -223,7 +222,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = window.renderer().build().unwrap();
+    let mut renderer = Renderer::new(window.renderer().build().unwrap());
 
     // Initialize the game state
     let mut state = GameState::new();

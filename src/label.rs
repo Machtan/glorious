@@ -1,66 +1,79 @@
+use std::rc::Rc;
 
-use sdl2::render::{Texture, Renderer};
+use sdl2::render::Texture;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 use sdl2_ttf::Font;
-use resources::ResourceManager;
+
+use renderer::Renderer;
+
+enum State {
+    Uncached((u8, u8, u8, u8)),
+    Cached(Texture),
+}
 
 pub struct Label {
     text: String,
-    font: String,
-    color: (u8, u8, u8, u8),
+    font: Rc<Font>,
     size: (u32, u32),
-    texture: Option<Texture>,
+    state: State,
 }
 
 impl Label {
-    pub fn new(font_id: &str, font: &Font, text: &str, color: (u8, u8, u8, u8)) -> Label {
-        let size = font.size_of(text).expect("Could not get size of label");
+    #[inline]
+    pub fn new(font: Rc<Font>, text: String, color: (u8, u8, u8, u8)) -> Label {
+        let size = font.size_of(&text).expect("could not calculate size of label");
         Label {
-            text: String::from(text),
-            font: String::from(font_id),
-            color: color,
+            text: text.into(),
+            font: font,
             size: size,
-            texture: None,
+            state: State::Uncached(color),
         }
     }
 
-    pub fn render(&mut self,
-                  renderer: &mut Renderer,
-                  x: i32,
-                  y: i32,
-                  resources: &ResourceManager) {
-
+    pub fn render(&mut self, renderer: &mut Renderer, x: i32, y: i32) {
         let (w, h) = self.size;
-        let dest = Rect::new(x, y, w, h);
-        if let Some(ref texture) = self.texture {
-            renderer.copy(texture, None, Some(dest));
-        } else {
-            let font = resources.font(&self.font).expect("font not found");
-            let (r, g, b, a) = self.color;
-            let surface = font.render(&self.text)
+        let dst = Rect::new(x, y, w, h);
+
+        if let State::Uncached((r, g, b, a)) = self.state {
+            let surface = self.font
+                .render(&self.text)
                 .blended(Color::RGBA(r, g, b, a))
-                .expect("Could not render label");
+                .expect("could not render label");
+
             let texture = renderer.create_texture_from_surface(&surface)
-                .expect("Could not upload label to texture");
-            renderer.copy(&texture, None, Some(dest));
-            self.texture = Some(texture);
+                .expect("could not upload label to texture");
+
+            self.state = State::Cached(texture);
+        }
+
+        if let State::Cached(ref texture) = self.state {
+            renderer.copy(texture, None, Some(dst));
+        } else {
+            unreachable!();
         }
     }
 
+    #[inline]
     pub fn size(&self) -> (u32, u32) {
         self.size
     }
 
+    #[inline]
     pub fn texture(&self) -> Option<&Texture> {
-        self.texture.as_ref()
+        match self.state {
+            State::Cached(ref texture) => Some(texture),
+            _ => None,
+        }
     }
 
+    #[inline]
     pub fn text(&self) -> &str {
         &self.text
     }
 
-    pub fn font(&self) -> &str {
+    #[inline]
+    pub fn font(&self) -> &Rc<Font> {
         &self.font
     }
 }
