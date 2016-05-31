@@ -17,7 +17,7 @@ impl Sprite {
     /// `rect`, or the entire texture, if `rect` is `None`.
     pub fn new(texture: Rc<Texture>, rect: Option<Rect>) -> Sprite {
         let rect = rect.unwrap_or_else(|| {
-            let TextureQuery { width, height, ..} = texture.query();
+            let TextureQuery { width, height, .. } = texture.query();
             Rect::new(0, 0, width, height)
         });
         Sprite {

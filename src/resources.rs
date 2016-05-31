@@ -20,27 +20,32 @@ impl ResourceManager {
         ResourceManager {
             textures: HashMap::new(),
             sprites: HashMap::new(),
-            fonts:HashMap::new(),
+            fonts: HashMap::new(),
         }
     }
-    
-    pub fn load_texture(&mut self, path: &str, renderer: &mut Renderer) 
-            -> Result<(), String> {
+
+    pub fn load_texture(&mut self, path: &str, renderer: &mut Renderer) -> Result<(), String> {
         let texture = renderer.load_texture(&Path::new(path))?;
         self.textures.insert(String::from(path), Rc::new(texture));
         Ok(())
     }
-    
-    pub fn load_font(&mut self, name: &str, path: &str, point_size: u16, 
-            context: &Sdl2TtfContext)
-            -> Result<(), String> {
+
+    pub fn load_font(&mut self,
+                     name: &str,
+                     path: &str,
+                     point_size: u16,
+                     context: &Sdl2TtfContext)
+                     -> Result<(), String> {
         let font = try!(context.load_font(&Path::new(path), point_size));
         self.fonts.insert(String::from(name), font);
         Ok(())
     }
-    
-    pub fn create_sprite(&mut self, name: &str, texture: &str, source: Option<Rect>)
-            -> Result<(), String> {
+
+    pub fn create_sprite(&mut self,
+                         name: &str,
+                         texture: &str,
+                         source: Option<Rect>)
+                         -> Result<(), String> {
         let texture = if let Some(texture) = self.textures.get(texture) {
             texture.clone()
         } else {
@@ -50,11 +55,11 @@ impl ResourceManager {
         self.sprites.insert(String::from(name), sprite);
         Ok(())
     }
-        
+
     pub fn sprite(&self, name: &str) -> Option<&Sprite> {
         self.sprites.get(name)
     }
-    
+
     pub fn font(&self, name: &str) -> Option<&Font> {
         self.fonts.get(name)
     }

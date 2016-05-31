@@ -9,9 +9,21 @@ pub trait InputManager<M> {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum InputPatternKind {
     Quit,
-    KeyPressed { key: Keycode, is_scancode: bool, modifiers: Mod},
-    KeyReleased { key: Keycode, is_scancode: bool, modifiers: Mod},
-    KeyRepeated { key: Keycode, is_scancode: bool, modifiers: Mod},
+    KeyPressed {
+        key: Keycode,
+        is_scancode: bool,
+        modifiers: Mod,
+    },
+    KeyReleased {
+        key: Keycode,
+        is_scancode: bool,
+        modifiers: Mod,
+    },
+    KeyRepeated {
+        key: Keycode,
+        is_scancode: bool,
+        modifiers: Mod,
+    },
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -22,38 +34,53 @@ pub struct InputPattern {
 
 impl InputPattern {
     fn new(window_id: u32, kind: InputPatternKind) -> InputPattern {
-        InputPattern { window_id: window_id, kind: kind }
+        InputPattern {
+            window_id: window_id,
+            kind: kind,
+        }
     }
 
     pub fn quit() -> InputPattern {
         InputPattern::new(0, InputPatternKind::Quit)
     }
 
-    pub fn key_pressed(window_id: u32, key: Keycode, is_scancode: bool,
-            modifiers: Option<Mod>)
-            -> InputPattern {
-        InputPattern::new(window_id, InputPatternKind::KeyPressed {
-            key: key, is_scancode: is_scancode,
-            modifiers: modifiers.unwrap_or(Mod::empty())
-        })
+    pub fn key_pressed(window_id: u32,
+                       key: Keycode,
+                       is_scancode: bool,
+                       modifiers: Option<Mod>)
+                       -> InputPattern {
+        InputPattern::new(window_id,
+                          InputPatternKind::KeyPressed {
+                              key: key,
+                              is_scancode: is_scancode,
+                              modifiers: modifiers.unwrap_or(Mod::empty()),
+                          })
     }
 
-    pub fn key_released(window_id: u32, key: Keycode, is_scancode: bool,
-            modifiers: Option<Mod>)
-            -> InputPattern {
-        InputPattern::new(window_id, InputPatternKind::KeyReleased {
-            key: key, is_scancode: is_scancode,
-            modifiers: modifiers.unwrap_or(Mod::empty())
-        })
+    pub fn key_released(window_id: u32,
+                        key: Keycode,
+                        is_scancode: bool,
+                        modifiers: Option<Mod>)
+                        -> InputPattern {
+        InputPattern::new(window_id,
+                          InputPatternKind::KeyReleased {
+                              key: key,
+                              is_scancode: is_scancode,
+                              modifiers: modifiers.unwrap_or(Mod::empty()),
+                          })
     }
 
-    pub fn key_repeated(window_id: u32, key: Keycode, is_scancode: bool,
-            modifiers: Option<Mod>)
-            -> InputPattern {
-        InputPattern::new(window_id, InputPatternKind::KeyRepeated {
-            key: key, is_scancode: is_scancode,
-            modifiers: modifiers.unwrap_or(Mod::empty())
-        })
+    pub fn key_repeated(window_id: u32,
+                        key: Keycode,
+                        is_scancode: bool,
+                        modifiers: Option<Mod>)
+                        -> InputPattern {
+        InputPattern::new(window_id,
+                          InputPatternKind::KeyRepeated {
+                              key: key,
+                              is_scancode: is_scancode,
+                              modifiers: modifiers.unwrap_or(Mod::empty()),
+                          })
     }
 
     pub fn matches(&self, event: &Event) -> bool {

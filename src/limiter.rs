@@ -4,7 +4,7 @@ use std::thread;
 /// A frame limiter with a maximum frame rate.
 pub struct FrameLimiter {
     last_tick: Instant,
-    //max_fps: u32,
+    // max_fps: u32,
     frame_length: Duration,
 }
 
@@ -17,7 +17,7 @@ impl FrameLimiter {
         let frame_length = Duration::new(0, 1_000_000_000 / max_fps);
         FrameLimiter {
             last_tick: Instant::now(),
-            //max_fps: max_fps,
+            // max_fps: max_fps,
             frame_length: frame_length,
         }
     }
@@ -34,9 +34,9 @@ impl FrameLimiter {
             let remainder = self.frame_length - elapsed;
             thread::sleep(remainder);
         } else {
-            //let nanos = elapsed.as_secs() * 1_000_000_000 + elapsed.subsec_nanos() as u64;
-            //let fps = 1_000_000_000 as f64 / nanos as f64;
-            //println!("Too slow... FPS: {:05.2}", fps);
+            // let nanos = elapsed.as_secs() * 1_000_000_000 + elapsed.subsec_nanos() as u64;
+            // let fps = 1_000_000_000 as f64 / nanos as f64;
+            // println!("Too slow... FPS: {:05.2}", fps);
         }
         self.last_tick = Instant::now();
     }

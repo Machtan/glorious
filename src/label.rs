@@ -14,8 +14,7 @@ pub struct Label {
 }
 
 impl Label {
-    pub fn new(font_id: &str, font: &Font, text: &str, color: (u8, u8, u8, u8))
-            -> Label {
+    pub fn new(font_id: &str, font: &Font, text: &str, color: (u8, u8, u8, u8)) -> Label {
         let size = font.size_of(text).expect("Could not get size of label");
         Label {
             text: String::from(text),
@@ -25,10 +24,13 @@ impl Label {
             texture: None,
         }
     }
-    
-    pub fn render(&mut self, renderer: &mut Renderer, x: i32, y: i32,
-            resources: &ResourceManager) {
-        
+
+    pub fn render(&mut self,
+                  renderer: &mut Renderer,
+                  x: i32,
+                  y: i32,
+                  resources: &ResourceManager) {
+
         let (w, h) = self.size;
         let dest = Rect::new(x, y, w, h);
         if let Some(ref texture) = self.texture {
@@ -36,7 +38,8 @@ impl Label {
         } else {
             let font = resources.font(&self.font).expect("font not found");
             let (r, g, b, a) = self.color;
-            let surface = font.render(&self.text).blended(Color::RGBA(r, g, b, a))
+            let surface = font.render(&self.text)
+                .blended(Color::RGBA(r, g, b, a))
                 .expect("Could not render label");
             let texture = renderer.create_texture_from_surface(&surface)
                 .expect("Could not upload label to texture");
@@ -44,19 +47,19 @@ impl Label {
             self.texture = Some(texture);
         }
     }
-    
+
     pub fn size(&self) -> (u32, u32) {
         self.size
     }
-    
+
     pub fn texture(&self) -> Option<&Texture> {
         self.texture.as_ref()
     }
-    
+
     pub fn text(&self) -> &str {
         &self.text
     }
-    
+
     pub fn font(&self) -> &str {
         &self.font
     }

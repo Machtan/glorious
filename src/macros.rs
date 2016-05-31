@@ -1,5 +1,5 @@
 /// Creates a boxed closure that maps SDL2 events to messages.
-/// 
+///
 /// # Examples
 /// ```rust
 /// # #[macro_use] extern crate glorious;
@@ -32,7 +32,7 @@ macro_rules! map_event {
 /// Creates a boxed closure that maps key presses to messages.
 ///
 /// The key is recognized by the event's `keycode`.
-/// 
+///
 /// # Examples
 /// ```rust
 /// # #[macro_use] extern crate glorious;
@@ -64,7 +64,7 @@ macro_rules! map_key_pressed {
 /// Creates a boxed closure that maps key releases to messages.
 ///
 /// The key is recognized by the event's `keycode`.
-/// 
+///
 /// # Examples
 /// ```rust
 /// # #[macro_use] extern crate glorious;
