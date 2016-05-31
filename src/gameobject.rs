@@ -27,7 +27,7 @@ pub trait Behavior {
     }
 
     /// Renders the object.
-    fn render(&self, _state: &Self::State, _renderer: &mut Renderer) {
+    fn render(&mut self, _state: &Self::State, _renderer: &mut Renderer) {
         // Do nothing by default
     }
 }
@@ -61,7 +61,7 @@ impl<'a, B> Behavior for [&'a mut B]
         }
     }
 
-    fn render(&self, state: &Self::State, renderer: &mut Renderer) {
+    fn render(&mut self, state: &Self::State, renderer: &mut Renderer) {
         for child in self {
             child.render(state, renderer);
         }

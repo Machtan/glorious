@@ -139,7 +139,7 @@ impl Behavior for Player {
     }
 
     /// Renders the object.
-    fn render(&self, _state: &Self::State, renderer: &mut Renderer) {
+    fn render(&mut self, _state: &Self::State, renderer: &mut Renderer) {
         self.sprite.render(renderer, self.rect.x(), self.rect.y(),
             Some((128, 128))
         );
@@ -202,8 +202,8 @@ impl Behavior for GameLogic {
     }
 
     /// Renders the object.
-    fn render(&self, state: &Self::State, renderer: &mut Renderer) {
-        for object in &self.objects {
+    fn render(&mut self, state: &Self::State, renderer: &mut Renderer) {
+        for object in &mut self.objects {
             object.render(state, renderer);
         }
     }
