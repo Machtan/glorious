@@ -43,6 +43,16 @@ impl<'a> ResourceManager<'a> {
         if let Some(font) = self.fonts.borrow().get(&(Cow::Borrowed(path), point_size)) {
             return font.clone();
         }
+        let (sx, sy) = self.renderer.scale();
+        let scale = if sx >= sy {
+            sx
+        } else {
+            sy
+        };
+
+        // TODO: Figure out if it should actually be divided by the scale.
+        let point_size = (point_size as f32 * scale) as u16;
+
         let font = self.ttf_ctx.load_font(path.as_ref(), point_size).expect("could not load font");
         let font = Rc::new(font);
         self.fonts.borrow_mut().insert((path.to_owned().into(), point_size), font.clone());

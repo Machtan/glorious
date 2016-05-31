@@ -57,4 +57,9 @@ impl<'a> Renderer<'a> {
     pub fn present(&mut self) {
         self.inner.borrow_mut().present();
     }
+
+    #[inline]
+    pub fn scale(&self) -> (f32, f32) {
+        self.inner.borrow().scale()
+    }
 }

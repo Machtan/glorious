@@ -32,9 +32,6 @@ impl Label {
     }
 
     pub fn render(&mut self, renderer: &mut Renderer, x: i32, y: i32) {
-        let (w, h) = self.size;
-        let dst = Rect::new(x, y, w, h);
-
         if let State::Uncached((r, g, b, a)) = self.state {
             let surface = self.font
                 .render(&self.text)
@@ -48,6 +45,11 @@ impl Label {
         }
 
         if let State::Cached(ref texture) = self.state {
+            let (w, h) = self.size;
+            let (sx, sy) = renderer.scale();
+            // TODO: Figure out if it should actually be multiplied by the scale.
+            let dst = Rect::new(x, y, (w as f32 / sx) as u32, (h as f32 / sy) as u32);
+
             renderer.copy(texture, None, Some(dst));
         } else {
             unreachable!();
