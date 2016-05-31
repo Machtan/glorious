@@ -1,24 +1,29 @@
 
 use std::rc::Rc;
-use sdl2::render::{Texture, Renderer, TextureQuery};
+use sdl2::render::{Texture, Renderer};
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
+use sdl2_ttf::Font;
 use resources::ResourceManager;
 
 enum LabelKind {
-    Cached { texture: Rc<Texture>, size: (u32, u32) },
+    Cached { texture: Rc<Texture> },
     Uncached { font: String, text: String, color: (u8, u8, u8, u8) },
 }
 
 pub struct Label {
+    size: (u32, u32),
     kind: LabelKind,
 }
 
 impl Label {
-    pub fn new(font: &str, text: &str, color: (u8, u8, u8, u8)) -> Label {
+    pub fn new(font_id: &str, font: &Font, text: &str, color: (u8, u8, u8, u8))
+            -> Label {
+        let size = font.size_of(text).expect("Could not get size of label");
         Label {
+            size: size,
             kind: LabelKind::Uncached {
-                font: String::from(font),
+                font: String::from(font_id),
                 text: String::from(text),
                 color: color,
             }
@@ -43,19 +48,15 @@ impl Label {
             Cached { ref texture, ..} => texture.clone(),
         };
         if just_cached {
-            let TextureQuery { width, height, ..} = texture.query();
-            self.kind = Cached { texture: texture, size: (width, height) };
+            self.kind = Cached { texture: texture };
         }
-        let (w, h) = self.size().unwrap();
+        let (w, h) = self.size();
         let dest = Rect::new(x, y, w, h);
         renderer.copy(&*self.texture().unwrap(), None, Some(dest));
     }
     
-    pub fn size(&self) -> Option<(u32, u32)> {
-        match self.kind {
-            LabelKind::Cached { size, .. } => Some(size),
-            _ => None,
-        }
+    pub fn size(&self) -> (u32, u32) {
+        self.size
     }
     
     pub fn texture(&self) -> Option<Rc<Texture>> {

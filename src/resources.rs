@@ -54,9 +54,10 @@ impl ResourceManager {
         Ok(())
     }
     
-    pub fn create_label(&mut self, name: &str, font: &str, text: &str, 
+    pub fn create_label(&mut self, name: &str, font_id: &str, text: &str, 
             color: (u8, u8, u8, u8)) {
-        let label = Label::new(font, text, color);
+        let font = self.fonts.get(font_id).expect("Font not loaded");
+        let label = Label::new(font_id, font, text, color);
         self.labels.insert(String::from(name), label);
     }
         
