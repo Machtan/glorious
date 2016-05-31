@@ -56,4 +56,8 @@ impl Label {
     pub fn text(&self) -> &str {
         &self.text
     }
+    
+    pub fn font(&self) -> &str {
+        &self.font
+    }
 }
