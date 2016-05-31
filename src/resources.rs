@@ -10,6 +10,7 @@ use sdl2_ttf::{Sdl2TtfContext, Font};
 use misc::Ellipsis;
 use renderer::Renderer;
 
+#[derive(Clone)]
 pub struct ResourceManager<'a> {
     renderer: Renderer<'a>,
     ttf_ctx: Rc<Sdl2TtfContext>,
