@@ -8,13 +8,11 @@ use sdl2::rect::Rect;
 use sdl2_image::LoadTexture;
 use sdl2_ttf::{Sdl2TtfContext, Font};
 use sprite::Sprite;
-use label::Label;
 
 pub struct ResourceManager {
     textures: HashMap<String, Rc<Texture>>,
     sprites: HashMap<String, Sprite>,
     fonts: HashMap<String, Font>,
-    labels: HashMap<String, Label>,
 }
 
 impl ResourceManager {
@@ -23,7 +21,6 @@ impl ResourceManager {
             textures: HashMap::new(),
             sprites: HashMap::new(),
             fonts:HashMap::new(),
-            labels: HashMap::new(),
         }
     }
     
@@ -53,20 +50,9 @@ impl ResourceManager {
         self.sprites.insert(String::from(name), sprite);
         Ok(())
     }
-    
-    pub fn create_label(&mut self, name: &str, font_id: &str, text: &str, 
-            color: (u8, u8, u8, u8)) {
-        let font = self.fonts.get(font_id).expect("Font not loaded");
-        let label = Label::new(font_id, font, text, color);
-        self.labels.insert(String::from(name), label);
-    }
         
     pub fn sprite(&self, name: &str) -> Option<&Sprite> {
         self.sprites.get(name)
-    }
-    
-    pub fn label(&self, name: &str) -> Option<&Label> {
-        self.labels.get(name)
     }
     
     pub fn font(&self, name: &str) -> Option<&Font> {
