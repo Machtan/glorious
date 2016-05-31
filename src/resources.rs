@@ -91,6 +91,10 @@ impl ResourceManager {
     pub fn label(&self, name: &str) -> Option<&Sprite> {
         self.labels.get(name)
     }
+    
+    pub fn font(&self, name: &str) -> Option<&Font> {
+        self.fonts.get(name)
+    }
 }
 
 impl Debug for ResourceManager {
