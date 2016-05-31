@@ -52,4 +52,8 @@ impl Label {
     pub fn texture(&self) -> Option<&Texture> {
         self.texture.as_ref()
     }
+    
+    pub fn text(&self) -> &str {
+        &self.text
+    }
 }
