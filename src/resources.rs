@@ -3,18 +3,18 @@ use std::fmt::{self, Debug};
 use std::collections::HashMap;
 use std::path::Path;
 use std::rc::Rc;
-use sdl2::render::{Renderer, Texture, TextureValueError};
+use sdl2::render::{Renderer, Texture};
 use sdl2::rect::Rect;
-use sdl2::pixels::Color;
 use sdl2_image::LoadTexture;
-use sdl2_ttf::{Sdl2TtfContext, Font, FontError};
+use sdl2_ttf::{Sdl2TtfContext, Font};
 use sprite::Sprite;
+use label::Label;
 
 pub struct ResourceManager {
     textures: HashMap<String, Rc<Texture>>,
     sprites: HashMap<String, Sprite>,
     fonts: HashMap<String, Font>,
-    labels: HashMap<String, Sprite>,
+    labels: HashMap<String, Label>,
 }
 
 impl ResourceManager {
@@ -55,40 +55,16 @@ impl ResourceManager {
     }
     
     pub fn create_label(&mut self, name: &str, font: &str, text: &str, 
-            color: (u8, u8, u8, u8), renderer: &mut Renderer)
-            -> Result<(), String> {
-        let ref font = if let Some(font) = self.fonts.get(font) {
-            font
-        } else {
-            return Err(format!("No font named '{}' loaded!", font));
-        };
-        let (r, g, b, a) = color;
-        let surface = match font.render(text).blended(Color::RGBA(r, g, b, a)) {
-            Ok(surface) => surface,
-            Err(FontError::SdlError(text)) => {
-                return Err(text);
-            }
-            Err(_) => unreachable!(),
-        };
-        let texture = match renderer.create_texture_from_surface(&surface) {
-            Ok(texture) => texture,
-            Err(TextureValueError::SdlError(err)) => {
-                return Err(err);
-            }
-            Err(err) => {
-                panic!("Got a texture value error for a font! {:?}", err);
-            }
-        };
-        let sprite = Sprite::new(Rc::new(texture), None);
-        self.labels.insert(String::from(name), sprite);
-        Ok(())
+            color: (u8, u8, u8, u8)) {
+        let label = Label::new(font, text, color);
+        self.labels.insert(String::from(name), label);
     }
         
     pub fn sprite(&self, name: &str) -> Option<&Sprite> {
         self.sprites.get(name)
     }
     
-    pub fn label(&self, name: &str) -> Option<&Sprite> {
+    pub fn label(&self, name: &str) -> Option<&Label> {
         self.labels.get(name)
     }
     
