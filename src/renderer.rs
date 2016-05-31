@@ -62,4 +62,9 @@ impl<'a> Renderer<'a> {
     pub fn scale(&self) -> (f32, f32) {
         self.inner.borrow().scale()
     }
+
+    #[inline]
+    pub fn fill_rect(&mut self, rect: Rect) -> Result<(), String> {
+        self.inner.borrow_mut().fill_rect(rect)
+    }
 }
