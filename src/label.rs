@@ -21,8 +21,16 @@ pub struct Label {
 
 impl Label {
     #[inline]
-    pub fn new(font: Rc<Font>, text: String, color: (u8, u8, u8, u8)) -> Label {
-        let size = font.size_of(&text).expect("could not calculate size of label");
+    pub fn new<'a>(font: Rc<Font>,
+                   text: String,
+                   color: (u8, u8, u8, u8),
+                   renderer: Renderer<'a>)
+                   -> Label {
+        let (tw, th) = font.size_of(&text).expect("could not calculate size of label");
+        let (sx, sy) = renderer.scale();
+        // TODO: Figure out if it should actually be multiplied by the scale.
+        let size = ((tw as f32 / sx) as u32, (th as f32 / sy) as u32);
+
         Label {
             text: text.into(),
             font: font,
@@ -46,9 +54,7 @@ impl Label {
 
         if let State::Cached(ref texture) = self.state {
             let (w, h) = self.size;
-            let (sx, sy) = renderer.scale();
-            // TODO: Figure out if it should actually be multiplied by the scale.
-            let dst = Rect::new(x, y, (w as f32 / sx) as u32, (h as f32 / sy) as u32);
+            let dst = Rect::new(x, y, w, h);
 
             renderer.copy(texture, None, Some(dst));
         } else {
