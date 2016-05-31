@@ -9,7 +9,7 @@ pub trait Behavior {
 
     /// Initializes the object when it is added to the game.
     fn initialize(&mut self, _state: &mut Self::State, 
-            _queue: &mut Vec<Self::Message>, _renderer: &mut Renderer) {
+            _queue: &mut Vec<Self::Message>) {
         // Do nothing by default
     }
 
@@ -40,9 +40,9 @@ impl<'a, B> Behavior for [&'a mut B]
     type Message = B::Message;
 
     fn initialize(&mut self, state: &mut Self::State, 
-            queue: &mut Vec<Self::Message>, renderer: &mut Renderer) {
+            queue: &mut Vec<Self::Message>) {
         for child in self {
-            child.initialize(state, queue, renderer);
+            child.initialize(state, queue);
         }
     }
 

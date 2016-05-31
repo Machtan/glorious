@@ -176,11 +176,11 @@ impl Behavior for GameLogic {
 
     /// Initializes the object when it is added to the game.
     fn initialize(&mut self, state: &mut Self::State, 
-            new_messages: &mut Vec<Self::Message>, renderer: &mut Renderer) {
+            new_messages: &mut Vec<Self::Message>) {
         println!("State example : {}", state.example);
 
         for object in self.objects.iter_mut() {
-            object.initialize(state, new_messages, renderer);
+            object.initialize(state, new_messages);
         }
     }
 

@@ -56,7 +56,7 @@ impl<'a> Game<'a> {
         self.renderer.present();
 
         // Initialize
-        behavior.initialize(&mut state, &mut front, &mut self.renderer);
+        behavior.initialize(&mut state, &mut front);
         self.limiter.reset();
 
         // Main loop
