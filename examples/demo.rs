@@ -66,9 +66,9 @@ impl Behavior for Player {
 
     /// Handles new messages since the last frame.
     fn handle(&mut self,
-              state: &mut Self::State,
+              _state: &mut Self::State,
               message: Self::Message,
-              queue: &mut Vec<Self::Message>) {
+              _queue: &mut Vec<Self::Message>) {
         use self::Message::*;
         match message {
             StartMovingLeft => {
@@ -139,7 +139,7 @@ impl Behavior for Player {
     }
 
     /// Renders the object.
-    fn render(&self, state: &Self::State, renderer: &mut Renderer) {
+    fn render(&self, _state: &Self::State, renderer: &mut Renderer) {
         self.sprite.render(renderer, self.rect.x(), self.rect.y(),
             Some((128, 128))
         );
@@ -175,11 +175,12 @@ impl Behavior for GameLogic {
     type Message = Message;
 
     /// Initializes the object when it is added to the game.
-    fn initialize(&mut self, state: &mut Self::State, new_messages: &mut Vec<Self::Message>) {
+    fn initialize(&mut self, state: &mut Self::State, 
+            new_messages: &mut Vec<Self::Message>, renderer: &mut Renderer) {
         println!("State example : {}", state.example);
 
         for object in self.objects.iter_mut() {
-            object.initialize(state, new_messages);
+            object.initialize(state, new_messages, renderer);
         }
     }
 
