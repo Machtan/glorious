@@ -36,9 +36,9 @@ impl<'a> Game<'a> {
 
     /// Runs the game. Close the window to quit (by default).
     pub fn run<B, S, I, F>(&mut self,
-                           mut state: S,
+                           state: &mut S,
                            manager: &I,
-                           mut behavior: &mut B,
+                           behavior: &mut B,
                            mut on_exit_signal: F)
         where B: Behavior<S>,
               I: InputManager<B::Message>,
@@ -54,7 +54,7 @@ impl<'a> Game<'a> {
         self.renderer.present();
 
         // Initialize
-        behavior.initialize(&mut state, &mut front);
+        behavior.initialize(state, &mut front);
         self.limiter.reset();
 
         // Main loop
@@ -81,21 +81,21 @@ impl<'a> Game<'a> {
 
             // Let the objects handle messages
             for m in front.drain(..) {
-                behavior.handle(&mut state, m, &mut back);
+                behavior.handle(state, m, &mut back);
             }
 
             // Swap the message queues
             mem::swap(&mut front, &mut back);
 
             // Update the objects and let them send messages
-            behavior.update(&mut state, &mut front);
+            behavior.update(state, &mut front);
 
             // Clear the screen
             self.renderer.set_draw_color(self.clear_color);
             self.renderer.clear();
 
             // Render
-            behavior.render(&state, &mut self.renderer);
+            behavior.render(state, &mut self.renderer);
             self.renderer.present();
 
             // Limit frame rate

@@ -255,7 +255,7 @@ fn main() {
     const MAX_FPS: u32 = 60;
     let mut game = Game::new(MAX_FPS, renderer, event_pump);
 
-    game.run(state, &mapper, &mut logic, |signal| {
+    game.run(&mut state, &mapper, &mut logic, |signal| {
         match signal {
             ExitSignal::ApplicationQuit => true,
             ExitSignal::EscapePressed => {
