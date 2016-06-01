@@ -21,7 +21,7 @@
 macro_rules! map_event {
     ($pat:pat, $message:expr) => {{
         use sdl2::event::Event;
-        Box::new(|event: &Event, push: &mut FnMut(_)| {
+        Box::new(move |event: &Event, push: &mut FnMut(_)| {
             if let $pat = *event {
                 push($message);
             }

@@ -1,3 +1,6 @@
+//! The crate `glorious` is a simple framework for message-based games,
+//! based on SDL2.
+
 #![feature(question_mark)]
 extern crate sdl2;
 extern crate sdl2_image;
@@ -14,9 +17,9 @@ mod macros;
 mod renderer;
 mod resources;
 
-pub use game::{Game, ExitSignal};
+pub use game::Game;
 pub use gameobject::Behavior;
-pub use input::{InputManager, InputPattern, InputPatternKind, BoxedInputMapper};
+pub use input::{InputManager, InputPattern, BoxedInputMapper};
 pub use label::Label;
 pub use limiter::FrameLimiter;
 pub use renderer::Renderer;

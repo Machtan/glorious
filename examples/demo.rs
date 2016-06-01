@@ -6,12 +6,12 @@ extern crate sdl2_image;
 use std::path::Path;
 use std::rc::Rc;
 
-use glorious::{Behavior, BoxedInputMapper, ExitSignal, Game, Renderer, Sprite};
+use glorious::{Behavior, BoxedInputMapper, Game, Renderer, Sprite};
 use sdl2::keyboard::{Keycode, Scancode};
 use sdl2::rect::Rect;
 use sdl2_image::{INIT_PNG, INIT_JPG};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 enum Message {
     StartMovingLeft,
     StopMovingLeft,
@@ -21,6 +21,7 @@ enum Message {
     StopMovingUp,
     StartMovingDown,
     StopMovingDown,
+    Quit,
 }
 
 const PLAYER_MOVE_SPEED: i32 = 4;
@@ -134,6 +135,7 @@ impl Behavior<GameState> for Player {
                     self.vy = 0;
                 }
             }
+            _ => {}
         }
     }
 
@@ -230,6 +232,8 @@ fn main() {
 
     let mut mapper = BoxedInputMapper::new();
 
+    mapper.add(map_event!(Event::Quit { .. }, Message::Quit));
+
     mapper.add(map_key_pressed!(Keycode::Up, Message::StartMovingUp));
     mapper.add(map_key_pressed!(Keycode::Down, Message::StartMovingDown));
     mapper.add(map_key_pressed!(Keycode::Left, Message::StartMovingLeft));
@@ -255,13 +259,5 @@ fn main() {
     const MAX_FPS: u32 = 60;
     let mut game = Game::new(MAX_FPS, renderer, event_pump);
 
-    game.run(&mut state, &mapper, &mut logic, |signal| {
-        match signal {
-            ExitSignal::ApplicationQuit => true,
-            ExitSignal::EscapePressed => {
-                println!("Escape exit signal sent!");
-                false
-            }
-        }
-    });
+    game.run(&mut state, &mapper, &mut logic, |m| *m == Message::Quit);
 }

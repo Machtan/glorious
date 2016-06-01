@@ -5,9 +5,10 @@ use sdl2::render::{Texture, TextureQuery};
 
 use renderer::Renderer;
 
-/// A rectangular section of a texture.
+/// A rectangular section of a texture rendered on its own.
 #[derive(Clone)]
 pub struct Sprite {
+    /// The area in the texture for this sprite.
     pub rect: Rect,
     texture: Rc<Texture>,
 }
@@ -28,9 +29,14 @@ impl Sprite {
         }
     }
 
-    /// Renders the sprite.
+    /// Renders the sprite to the renderer at a given point.
     ///
-    /// If `size` is not `None`, the sprite will be scaled to that size.
+    /// If `size` is `Some`, the sprite will be scaled to that size.
+    ///
+    /// # Panics
+    ///
+    /// Panics if drawing fails for any reason (e.g. driver failure), or
+    /// if the provided texture does not belong to the renderer.
     pub fn render(&self, renderer: &mut Renderer, x: i32, y: i32, size: Option<(u32, u32)>) {
         let (w, h) = size.unwrap_or_else(|| (self.rect.width(), self.rect.height()));
         let dst = Rect::new(x, y, w, h);

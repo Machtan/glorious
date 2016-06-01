@@ -12,6 +12,7 @@ enum State {
     Cached(Texture),
 }
 
+/// A text label with a font and a color.
 pub struct Label {
     text: String,
     font: Rc<Font>,
@@ -20,6 +21,17 @@ pub struct Label {
 }
 
 impl Label {
+    /// Creates a new label.
+    ///
+    /// If high-dpi mode is enable for the renderer, then the font is
+    /// assumed to be upscaled accordingly. This is automatically
+    /// handled when the font is loaded with
+    /// [`ResourceManager::font`](struct.ResourceManager.html#method.font).
+    ///
+    /// # Panics
+    ///
+    /// Panics if `text` cannot be rendered by `font`, e.g. if the
+    /// the font does not contain the needed glyphs.
     #[inline]
     pub fn new<'a>(font: Rc<Font>,
                    text: String,
@@ -28,7 +40,6 @@ impl Label {
                    -> Label {
         let (tw, th) = font.size_of(&text).expect("could not calculate size of label");
         let (sx, sy) = renderer.scale();
-        // TODO: Figure out if it should actually be multiplied by the scale.
         let size = ((tw as f32 / sx) as u32, (th as f32 / sy) as u32);
 
         Label {
@@ -39,6 +50,13 @@ impl Label {
         }
     }
 
+    /// Renders the font to the renderer.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the label could not be rendered, either due to a
+    /// rendering error, or if a texture was cached for a different
+    /// renderer.
     pub fn render(&mut self, renderer: &mut Renderer, x: i32, y: i32) {
         if let State::Uncached((r, g, b, a)) = self.state {
             let surface = self.font
@@ -62,11 +80,13 @@ impl Label {
         }
     }
 
+    /// Returns the size of the label in terms of the renderer.
     #[inline]
     pub fn size(&self) -> (u32, u32) {
         self.size
     }
 
+    /// Returns the cached texture, if any.
     #[inline]
     pub fn texture(&self) -> Option<&Texture> {
         match self.state {
@@ -75,11 +95,13 @@ impl Label {
         }
     }
 
+    /// Returns the text to be renderered.
     #[inline]
     pub fn text(&self) -> &str {
         &self.text
     }
 
+    /// Returns the font to render the label with.
     #[inline]
     pub fn font(&self) -> Rc<Font> {
         self.font.clone()

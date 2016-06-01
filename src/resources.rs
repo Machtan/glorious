@@ -9,6 +9,7 @@ use sdl2_ttf::{Sdl2TtfContext, Font};
 
 use renderer::Renderer;
 
+/// A resource manager responsible for loading and caching assets.
 #[derive(Clone)]
 pub struct ResourceManager<'a> {
     renderer: Renderer<'a>,
@@ -19,6 +20,9 @@ pub struct ResourceManager<'a> {
 }
 
 impl<'a> ResourceManager<'a> {
+    /// Creates a new resource manager.
+    ///
+    /// The `renderer` and `ttf_ctx` are used when loading assets.
     pub fn new(renderer: Renderer<'a>, ttf_ctx: Rc<Sdl2TtfContext>) -> Self {
         ResourceManager {
             renderer: renderer,
@@ -28,6 +32,16 @@ impl<'a> ResourceManager<'a> {
         }
     }
 
+    /// Ensures a texture is loaded and returns it.
+    ///
+    /// If a texture for the given path is already cached, it will be
+    /// returned directly. Otherwise the texture will be loaded from
+    /// disk.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the texture is not cached, and loading it fails (e.g.
+    /// if the file pointed to by path does not exist or is malformed).
     pub fn texture(&self, path: &str) -> Rc<Texture> {
         if let Some(texture) = self.textures.borrow().get(path) {
             return texture.clone();
@@ -38,6 +52,17 @@ impl<'a> ResourceManager<'a> {
         texture
     }
 
+    /// Ensures a font is loaded and returns it.
+    ///
+    /// If a font for the given path and point size is already cached,
+    /// it will be returned directly. Otherwise the texture will be
+    /// loaded from disk. If high-dpi mode is enabled for the renderer,
+    /// then the returned font is automatically upscaled appropriately.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the font is not cached, and loading it fails (e.g.
+    /// if the file pointed to by path does not exist or is malformed).
     pub fn font(&self, path: &str, point_size: u16) -> Rc<Font> {
         if let Some(font) = self.fonts.borrow().get(&(Cow::Borrowed(path), point_size)) {
             return font.clone();
@@ -49,7 +74,6 @@ impl<'a> ResourceManager<'a> {
             sy
         };
 
-        // TODO: Figure out if it should actually be divided by the scale.
         let point_size = (point_size as f32 * scale) as u16;
 
         let font = self.ttf_ctx.load_font(path.as_ref(), point_size).expect("could not load font");
@@ -58,9 +82,17 @@ impl<'a> ResourceManager<'a> {
         font
     }
 
+    /// Returns the renderer this resource manager was created with.
     #[inline]
     pub fn renderer(&self) -> Renderer<'a> {
         self.renderer.clone()
+    }
+
+    /// Returns the `Sdl2TtfContext` that this resource manager was
+    /// created with.
+    #[inline]
+    pub fn ttf_context(&self) -> Rc<Sdl2TtfContext> {
+        self.ttf_ctx.clone()
     }
 }
 

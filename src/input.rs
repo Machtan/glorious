@@ -1,13 +1,17 @@
 use sdl2::event::Event;
 use sdl2::keyboard::{Keycode, Mod};
 
+/// A manager responsible for converting SDL2 events into messages.
+///
+/// The parameter `M` is the type of messages that the manager produces.
 pub trait InputManager<M> {
-    /// Pushes the messages generated from the given event to the passed handler.
+    /// Pushes the messages generated from the given event to the passed
+    /// handler.
     fn handle(&self, event: &Event, push: &mut FnMut(M));
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum InputPatternKind {
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+enum InputPatternKind {
     Quit,
     KeyPressed {
         key: Keycode,
@@ -26,10 +30,11 @@ pub enum InputPatternKind {
     },
 }
 
-#[derive(Debug, Clone, Copy)]
+/// A pattern to match SDL2 events against.
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct InputPattern {
-    pub window_id: u32,
-    pub kind: InputPatternKind,
+    window_id: u32,
+    kind: InputPatternKind,
 }
 
 impl InputPattern {
@@ -40,10 +45,18 @@ impl InputPattern {
         }
     }
 
+    /// Creates a pattern for matching quit events.
     pub fn quit() -> InputPattern {
         InputPattern::new(0, InputPatternKind::Quit)
     }
 
+    /// Creates a pattern for matching pressed keys.
+    ///
+    /// If `is_scancode` is `true`, then events will match based on
+    /// the physical layout rather than the characters they produce.
+    /// This is recommended for inputs, where the layout matters (like
+    /// inverted-T WASD keys), rather than for inputs, where a mnemonic
+    /// is used (like I for inventory).
     pub fn key_pressed(window_id: u32,
                        key: Keycode,
                        is_scancode: bool,
@@ -57,6 +70,13 @@ impl InputPattern {
                           })
     }
 
+    /// Creates a pattern for matching released keys.
+    ///
+    /// If `is_scancode` is `true`, then events will match based on
+    /// the physical layout rather than the characters they produce.
+    /// This is recommended for inputs, where the layout matters (like
+    /// inverted-T WASD keys), rather than for inputs, where a mnemonic
+    /// is used (like I for inventory).
     pub fn key_released(window_id: u32,
                         key: Keycode,
                         is_scancode: bool,
@@ -70,6 +90,13 @@ impl InputPattern {
                           })
     }
 
+    /// Creates a pattern for matching repeated key presses.
+    ///
+    /// If `is_scancode` is `true`, then events will match based on
+    /// the physical layout rather than the characters they produce.
+    /// This is recommended for inputs, where the layout matters (like
+    /// inverted-T WASD keys), rather than for inputs, where a mnemonic
+    /// is used (like I for inventory).
     pub fn key_repeated(window_id: u32,
                         key: Keycode,
                         is_scancode: bool,
@@ -83,6 +110,7 @@ impl InputPattern {
                           })
     }
 
+    /// [WIP] Returns true if the SDL2 event matches the pattern.
     pub fn matches(&self, event: &Event) -> bool {
         use sdl2::event::Event::*;
 
@@ -112,6 +140,7 @@ impl<M: 'static> BoxedInputMapper<M> {
         self.mappers.push(mapper)
     }
 
+    /// [WIP] Adds a pattern with a message constructor.
     pub fn add_pattern_with<F>(&mut self, pattern: InputPattern, func: F)
         where F: 'static + Fn() -> M
     {
@@ -124,6 +153,7 @@ impl<M: 'static> BoxedInputMapper<M> {
 }
 
 impl<M: 'static + Clone> BoxedInputMapper<M> {
+    /// [WIP] Adds a pattern with a message to clone for each event.
     pub fn add_pattern(&mut self, pattern: InputPattern, message: M) {
         self.add_pattern_with(pattern, move || message.clone());
     }

@@ -1,19 +1,12 @@
 use std::mem;
 
-use sdl2::event::Event;
 use sdl2::EventPump;
-use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 
 use gameobject::Behavior;
 use input::InputManager;
 use limiter::FrameLimiter;
 use renderer::Renderer;
-
-pub enum ExitSignal {
-    ApplicationQuit,
-    EscapePressed,
-}
 
 /// The state needed for a game.
 pub struct Game<'a> {
@@ -34,15 +27,18 @@ impl<'a> Game<'a> {
         }
     }
 
-    /// Runs the game. Close the window to quit (by default).
+    /// Runs the game.
+    ///
+    /// For each message push to the queue, `is_quit_message` is called
+    /// to determine if the game should quit.
     pub fn run<B, S, I, F>(&mut self,
                            state: &mut S,
                            manager: &I,
                            behavior: &mut B,
-                           mut on_exit_signal: F)
+                           is_quit_message: F)
         where B: Behavior<S>,
               I: InputManager<B::Message>,
-              F: FnMut(ExitSignal) -> bool
+              F: Fn(&B::Message) -> bool
     {
         // Create message queues
         let mut front = Vec::new();
@@ -61,26 +57,14 @@ impl<'a> Game<'a> {
         'running: loop {
             // Handle events
             for event in self.event_pump.poll_iter() {
-                match event {
-                    Event::Quit { .. } => {
-                        if on_exit_signal(ExitSignal::ApplicationQuit) {
-                            break 'running;
-                        }
-                    }
-                    e => {
-                        if let Event::KeyDown { keycode: Some(Keycode::Escape), .. } = e {
-                            if on_exit_signal(ExitSignal::EscapePressed) {
-                                break 'running;
-                            }
-                        }
-                        // Let the input manager push to the message queue
-                        manager.handle(&e, &mut |m| front.push(m));
-                    }
-                }
+                manager.handle(&event, &mut |m| front.push(m));
             }
 
             // Let the objects handle messages
             for m in front.drain(..) {
+                if is_quit_message(&m) {
+                    break 'running;
+                }
                 behavior.handle(state, m, &mut back);
             }
 
