@@ -7,7 +7,6 @@ use std::rc::Rc;
 use sdl2::render::Texture;
 use sdl2_ttf::{Sdl2TtfContext, Font};
 
-use misc::Ellipsis;
 use renderer::Renderer;
 
 #[derive(Clone)]
@@ -87,7 +86,7 @@ impl<'a> Debug for ResourceManager<'a> {
         f.debug_struct("ResourceManager")
             .field("textures", &IterDebug(self.textures.borrow().keys()))
             .field("fonts", &IterDebug(self.fonts.borrow().keys()))
-            .field("renderer", &Ellipsis)
+            .field("renderer", &(..))
             .finish()
     }
 }

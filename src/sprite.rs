@@ -3,7 +3,6 @@ use std::fmt::{self, Debug};
 use sdl2::rect::Rect;
 use sdl2::render::{Texture, TextureQuery};
 
-use misc::Ellipsis;
 use renderer::Renderer;
 
 /// A rectangular section of a texture.
@@ -43,7 +42,7 @@ impl Debug for Sprite {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         f.debug_struct("Sprite")
             .field("rect", &self.rect)
-            .field("texture", &Ellipsis)
+            .field("texture", &(..))
             .finish()
     }
 }
