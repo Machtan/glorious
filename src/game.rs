@@ -29,8 +29,8 @@ impl<'a> Game<'a> {
 
     /// Runs the game.
     ///
-    /// For each message push to the queue, `is_quit_message` is called
-    /// to determine if the game should quit.
+    /// For each message pushed to the queue, `is_quit_message` is
+    /// called to determine if the game should quit.
     pub fn run<B, S, I, F>(&mut self,
                            state: &mut S,
                            manager: &I,
