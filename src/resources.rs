@@ -2,6 +2,7 @@ use std::borrow::Cow;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt::{self, Debug};
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use sdl2::render::Texture;
@@ -12,6 +13,7 @@ use renderer::Renderer;
 /// A resource manager responsible for loading and caching assets.
 #[derive(Clone)]
 pub struct ResourceManager<'a> {
+    prefix: PathBuf,
     renderer: Renderer<'a>,
     ttf_ctx: Rc<Sdl2TtfContext>,
     textures: RefCell<HashMap<String, Rc<Texture>>>,
@@ -23,8 +25,18 @@ impl<'a> ResourceManager<'a> {
     /// Creates a new resource manager.
     ///
     /// The `renderer` and `ttf_ctx` are used when loading assets.
-    pub fn new(renderer: Renderer<'a>, ttf_ctx: Rc<Sdl2TtfContext>) -> Self {
+    pub fn new(renderer: Renderer<'a>, ttf_ctx: Rc<Sdl2TtfContext>) -> ResourceManager<'a> {
+        ResourceManager::with_prefix("", renderer, ttf_ctx)
+    }
+
+    pub fn with_prefix<P>(prefix: P,
+                          renderer: Renderer<'a>,
+                          ttf_ctx: Rc<Sdl2TtfContext>)
+                          -> ResourceManager<'a>
+        where P: Into<PathBuf>
+    {
         ResourceManager {
+            prefix: prefix.into(),
             renderer: renderer,
             ttf_ctx: ttf_ctx,
             textures: Default::default(),
@@ -46,7 +58,9 @@ impl<'a> ResourceManager<'a> {
         if let Some(texture) = self.textures.borrow().get(path) {
             return texture.clone();
         }
-        let texture = self.renderer.load_texture(path).expect("could not load texture");
+        let mut path_buf = self.prefix.clone();
+        path_buf.push(path);
+        let texture = self.renderer.load_texture(&path_buf).expect("could not load texture");
         let texture = Rc::new(texture);
         self.textures.borrow_mut().insert(path.to_owned(), texture.clone());
         texture
@@ -76,6 +90,8 @@ impl<'a> ResourceManager<'a> {
 
         let point_size = (point_size as f32 * scale) as u16;
 
+        let mut path_buf = self.prefix.clone();
+        path_buf.push(path);
         let font = self.ttf_ctx.load_font(path.as_ref(), point_size).expect("could not load font");
         let font = Rc::new(font);
         self.fonts.borrow_mut().insert((path.to_owned().into(), point_size), font.clone());
