@@ -52,7 +52,7 @@ macro_rules! map_key_pressed {
         use sdl2::event::Event;
         use sdl2::event::Event::KeyDown;
         Box::new(|event: &Event, push: &mut FnMut(_)| {
-            if let KeyDown { keycode: Some(key), .. } = *event {
+            if let KeyDown { keycode: Some(key), repeat: false, .. } = *event {
                 if key == $keycode {
                     push($message);
                 }
@@ -84,7 +84,7 @@ macro_rules! map_key_released {
         use sdl2::event::Event;
         use sdl2::event::Event::KeyUp;
         Box::new(|event: &Event, push: &mut FnMut(_)| {
-            if let KeyUp { keycode: Some(key), .. } = *event {
+            if let KeyUp { keycode: Some(key), repeat: false, .. } = *event {
                 if key == $keycode {
                     push($message);
                 }
@@ -116,7 +116,7 @@ macro_rules! map_scan_pressed {
         use sdl2::event::Event;
         use sdl2::event::Event::KeyDown;
         Box::new(|event: &Event, push: &mut FnMut(_)| {
-            if let KeyDown { scancode: Some(scan), .. } = *event {
+            if let KeyDown { scancode: Some(scan), repeat: false, .. } = *event {
                 if scan == $scancode {
                     push($message);
                 }
@@ -148,7 +148,7 @@ macro_rules! map_scan_released {
         use sdl2::event::Event;
         use sdl2::event::Event::KeyUp;
         Box::new(|event: &Event, push: &mut FnMut(_)| {
-            if let KeyUp { scancode: Some(scan), .. } = *event {
+            if let KeyUp { scancode: Some(scan), repeat: false, .. } = *event {
                 if scan == $scancode {
                     push($message);
                 }
