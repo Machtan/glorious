@@ -34,17 +34,18 @@ impl Label {
     /// Panics if `text` cannot be rendered by `font`, e.g. if the
     /// the font does not contain the needed glyphs.
     #[inline]
-    pub fn new<'a>(font: Rc<Font>,
-                   text: String,
+    pub fn new<'a, T: Into<String>>(font: Rc<Font>,
+                   text: T,
                    color: (u8, u8, u8, u8),
                    renderer: Renderer<'a>)
                    -> Label {
+        let text = text.into();
         let (tw, th) = font.size_of(&text).expect("could not calculate size of label");
         let (sx, sy) = renderer.scale();
         let size = ((tw as f32 / sx) as u32, (th as f32 / sy) as u32);
 
         Label {
-            text: text.into(),
+            text: text,
             font: font,
             size: size,
             state: State::Uncached(color),
