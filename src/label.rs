@@ -35,10 +35,10 @@ impl Label {
     /// the font does not contain the needed glyphs.
     #[inline]
     pub fn new<'a, T: Into<String>>(font: Rc<Font>,
-                   text: T,
-                   color: (u8, u8, u8, u8),
-                   renderer: Renderer<'a>)
-                   -> Label {
+                                    text: T,
+                                    color: (u8, u8, u8, u8),
+                                    renderer: Renderer<'a>)
+                                    -> Label {
         let text = text.into();
         let (tw, th) = font.size_of(&text).expect("could not calculate size of label");
         let (sx, sy) = renderer.scale();
@@ -86,6 +86,18 @@ impl Label {
     #[inline]
     pub fn size(&self) -> (u32, u32) {
         self.size
+    }
+
+    /// Returns the width of the label in terms of the renderer.
+    #[inline]
+    pub fn width(&self) -> u32 {
+        self.size.0
+    }
+
+    /// Returns the height of the label in terms of the renderer.
+    #[inline]
+    pub fn height(&self) -> u32 {
+        self.size.1
     }
 
     /// Returns the cached texture, if any.
