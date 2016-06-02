@@ -1,4 +1,5 @@
 use std::rc::Rc;
+use std::fmt::{self, Debug};
 
 use sdl2::render::Texture;
 use sdl2::rect::Rect;
@@ -105,5 +106,16 @@ impl Label {
     #[inline]
     pub fn font(&self) -> Rc<Font> {
         self.font.clone()
+    }
+}
+
+impl Debug for Label {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("Label")
+            .field("text", &self.text)
+            .field("size", &self.size)
+            .field("font", &(..))
+            .field("state", &(..))
+            .finish()
     }
 }
