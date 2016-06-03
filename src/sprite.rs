@@ -42,6 +42,10 @@ impl Sprite {
         let dst = Rect::new(x, y, w, h);
         renderer.copy(&*self.texture, Some(self.rect), Some(dst));
     }
+
+    pub fn render_rect(&self, renderer: &mut Renderer, rect: Rect) {
+        renderer.copy(&*self.texture, Some(self.rect), Some(rect));
+    }
 }
 
 impl Debug for Sprite {
