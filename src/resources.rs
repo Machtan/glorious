@@ -5,7 +5,7 @@ use std::fmt::{self, Debug};
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use sdl2::render::Texture;
+use sdl2::render::{BlendMode, Texture};
 use sdl2_ttf::{Sdl2TtfContext, Font};
 
 use renderer::Renderer;
@@ -60,7 +60,8 @@ impl<'a> ResourceManager<'a> {
         }
         let mut path_buf = self.prefix.clone();
         path_buf.push(path);
-        let texture = self.renderer.load_texture(&path_buf).expect("could not load texture");
+        let mut texture = self.renderer.load_texture(&path_buf).expect("could not load texture");
+        texture.set_blend_mode(BlendMode::Blend);
         let texture = Rc::new(texture);
         self.textures.borrow_mut().insert(path.to_owned(), texture.clone());
         texture
