@@ -10,6 +10,8 @@ use sdl2_ttf::{Sdl2TtfContext, Font};
 
 use renderer::Device;
 
+type FontId = (Cow<'static, str>, u16);
+
 /// A resource manager responsible for loading and caching assets.
 #[derive(Clone)]
 pub struct ResourceManager<'a> {
@@ -18,7 +20,7 @@ pub struct ResourceManager<'a> {
     ttf_ctx: &'a Sdl2TtfContext,
     textures: RefCell<HashMap<String, Rc<Texture>>>,
     // This hack with `Cow` allows us to index the `HashMap` with tuples of unowned strings.
-    fonts: RefCell<HashMap<(Cow<'static, str>, u16), Rc<Font>>>,
+    fonts: RefCell<HashMap<FontId, Rc<Font>>>,
 }
 
 impl<'a> ResourceManager<'a> {
@@ -108,7 +110,7 @@ impl<'a> ResourceManager<'a> {
     /// created with.
     #[inline]
     pub fn ttf_context(&self) -> &'a Sdl2TtfContext {
-        self.ttf_ctx.clone()
+        self.ttf_ctx
     }
 }
 

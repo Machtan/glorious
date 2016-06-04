@@ -14,7 +14,7 @@ use sdl2::surface::SurfaceRef;
 use sdl2::video::WindowRef;
 use sdl2_image::LoadTexture;
 
-pub fn init_renderer<'a>(renderer: SdlRenderer<'a>) -> (Device<'a>, Renderer<'a>) {
+pub fn init_renderer(renderer: SdlRenderer) -> (Device, Renderer) {
     let rc = Rc::new(RefCell::new(renderer));
     let device = Device { inner: rc.clone() };
     let renderer = Renderer { device: Device { inner: rc } };
