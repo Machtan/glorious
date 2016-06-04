@@ -2,6 +2,8 @@
 //! based on SDL2.
 
 #![feature(question_mark)]
+
+extern crate ref_filter_map;
 extern crate sdl2;
 extern crate sdl2_image;
 extern crate sdl2_ttf;
@@ -22,6 +24,6 @@ pub use gameobject::Behavior;
 pub use input::{InputManager, InputPattern, BoxedInputMapper};
 pub use label::Label;
 pub use limiter::FrameLimiter;
-pub use renderer::Renderer;
+pub use renderer::{init_renderer, Device, Renderer};
 pub use resources::ResourceManager;
 pub use sprite::Sprite;

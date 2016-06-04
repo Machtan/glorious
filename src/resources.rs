@@ -8,14 +8,14 @@ use std::rc::Rc;
 use sdl2::render::Texture;
 use sdl2_ttf::{Sdl2TtfContext, Font};
 
-use renderer::Renderer;
+use renderer::Device;
 
 /// A resource manager responsible for loading and caching assets.
 #[derive(Clone)]
 pub struct ResourceManager<'a> {
     prefix: PathBuf,
-    renderer: Renderer<'a>,
-    ttf_ctx: Rc<Sdl2TtfContext>,
+    device: &'a Device<'a>,
+    ttf_ctx: &'a Sdl2TtfContext,
     textures: RefCell<HashMap<String, Rc<Texture>>>,
     // This hack with `Cow` allows us to index the `HashMap` with tuples of unowned strings.
     fonts: RefCell<HashMap<(Cow<'static, str>, u16), Rc<Font>>>,
@@ -25,19 +25,19 @@ impl<'a> ResourceManager<'a> {
     /// Creates a new resource manager.
     ///
     /// The `renderer` and `ttf_ctx` are used when loading assets.
-    pub fn new(renderer: Renderer<'a>, ttf_ctx: Rc<Sdl2TtfContext>) -> ResourceManager<'a> {
-        ResourceManager::with_prefix("", renderer, ttf_ctx)
+    pub fn new(device: &'a Device<'a>, ttf_ctx: &'a Sdl2TtfContext) -> ResourceManager<'a> {
+        ResourceManager::with_prefix("", device, ttf_ctx)
     }
 
     pub fn with_prefix<P>(prefix: P,
-                          renderer: Renderer<'a>,
-                          ttf_ctx: Rc<Sdl2TtfContext>)
+                          device: &'a Device<'a>,
+                          ttf_ctx: &'a Sdl2TtfContext)
                           -> ResourceManager<'a>
         where P: Into<PathBuf>
     {
         ResourceManager {
             prefix: prefix.into(),
-            renderer: renderer,
+            device: device,
             ttf_ctx: ttf_ctx,
             textures: Default::default(),
             fonts: Default::default(),
@@ -60,7 +60,7 @@ impl<'a> ResourceManager<'a> {
         }
         let mut path_buf = self.prefix.clone();
         path_buf.push(path);
-        let texture = self.renderer.load_texture(&path_buf).expect("could not load texture");
+        let texture = self.device.load_texture(&path_buf).expect("could not load texture");
         let texture = Rc::new(texture);
         self.textures.borrow_mut().insert(path.to_owned(), texture.clone());
         texture
@@ -81,7 +81,7 @@ impl<'a> ResourceManager<'a> {
         if let Some(font) = self.fonts.borrow().get(&(Cow::Borrowed(path), point_size)) {
             return font.clone();
         }
-        let (sx, sy) = self.renderer.scale();
+        let (sx, sy) = self.device.scale();
         let scale = if sx >= sy {
             sx
         } else {
@@ -100,14 +100,14 @@ impl<'a> ResourceManager<'a> {
 
     /// Returns the renderer this resource manager was created with.
     #[inline]
-    pub fn renderer(&self) -> Renderer<'a> {
-        self.renderer.clone()
+    pub fn device(&self) -> &'a Device<'a> {
+        self.device
     }
 
     /// Returns the `Sdl2TtfContext` that this resource manager was
     /// created with.
     #[inline]
-    pub fn ttf_context(&self) -> Rc<Sdl2TtfContext> {
+    pub fn ttf_context(&self) -> &'a Sdl2TtfContext {
         self.ttf_ctx.clone()
     }
 }

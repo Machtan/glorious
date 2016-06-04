@@ -220,7 +220,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut renderer = Renderer::new(window.renderer().build().unwrap());
+    let (_, mut renderer) = glorious::init_renderer(window.renderer().build().unwrap());
 
     // Initialize the game state
     let mut state = GameState::new();

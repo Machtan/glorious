@@ -5,7 +5,7 @@ use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 use sdl2_ttf::Font;
 
-use renderer::Renderer;
+use renderer::{Device, Renderer};
 
 /// A text label.
 pub struct Label {
@@ -26,17 +26,17 @@ impl Label {
     /// Panics if `text` cannot be rendered by `font`, e.g. if the
     /// the font does not contain the needed glyphs.
     #[inline]
-    pub fn new(font: &Font, text: &str, color: (u8, u8, u8, u8), renderer: &Renderer) -> Label {
+    pub fn new(font: &Font, text: &str, color: (u8, u8, u8, u8), device: &Device) -> Label {
         let (r, g, b, a) = color;
         let surface = font.render(text)
             .blended(Color::RGBA(r, g, b, a))
             .expect("could not render label");
 
         let (tw, th) = surface.size();
-        let (sx, sy) = renderer.scale();
+        let (sx, sy) = device.scale();
         let size = ((tw as f32 / sx) as u32, (th as f32 / sy) as u32);
 
-        let texture = renderer.create_texture_from_surface(&surface)
+        let texture = device.create_texture_from_surface(&surface)
             .expect("could not upload label to texture");
 
         Label {
