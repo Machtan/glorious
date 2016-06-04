@@ -1,4 +1,3 @@
-use std::rc::Rc;
 use std::fmt::{self, Debug};
 
 use sdl2::render::Texture;
@@ -8,17 +7,10 @@ use sdl2_ttf::Font;
 
 use renderer::Renderer;
 
-enum State {
-    Uncached((u8, u8, u8, u8)),
-    Cached(Texture),
-}
-
-/// A text label with a font and a color.
+/// A text label.
 pub struct Label {
-    text: String,
-    font: Rc<Font>,
+    texture: Texture,
     size: (u32, u32),
-    state: State,
 }
 
 impl Label {
@@ -34,21 +26,22 @@ impl Label {
     /// Panics if `text` cannot be rendered by `font`, e.g. if the
     /// the font does not contain the needed glyphs.
     #[inline]
-    pub fn new<'a, T: Into<String>>(font: Rc<Font>,
-                                    text: T,
-                                    color: (u8, u8, u8, u8),
-                                    renderer: Renderer<'a>)
-                                    -> Label {
-        let text = text.into();
-        let (tw, th) = font.size_of(&text).expect("could not calculate size of label");
+    pub fn new(font: &Font, text: &str, color: (u8, u8, u8, u8), renderer: &Renderer) -> Label {
+        let (r, g, b, a) = color;
+        let surface = font.render(text)
+            .blended(Color::RGBA(r, g, b, a))
+            .expect("could not render label");
+
+        let (tw, th) = surface.size();
         let (sx, sy) = renderer.scale();
         let size = ((tw as f32 / sx) as u32, (th as f32 / sy) as u32);
 
+        let texture = renderer.create_texture_from_surface(&surface)
+            .expect("could not upload label to texture");
+
         Label {
-            text: text,
-            font: font,
+            texture: texture,
             size: size,
-            state: State::Uncached(color),
         }
     }
 
@@ -56,30 +49,12 @@ impl Label {
     ///
     /// # Panics
     ///
-    /// Panics if the label could not be rendered, either due to a
-    /// rendering error, or if a texture was cached for a different
-    /// renderer.
-    pub fn render(&mut self, renderer: &mut Renderer, x: i32, y: i32) {
-        if let State::Uncached((r, g, b, a)) = self.state {
-            let surface = self.font
-                .render(&self.text)
-                .blended(Color::RGBA(r, g, b, a))
-                .expect("could not render label");
-
-            let texture = renderer.create_texture_from_surface(&surface)
-                .expect("could not upload label to texture");
-
-            self.state = State::Cached(texture);
-        }
-
-        if let State::Cached(ref texture) = self.state {
-            let (w, h) = self.size;
-            let dst = Rect::new(x, y, w, h);
-
-            renderer.copy(texture, None, Some(dst));
-        } else {
-            unreachable!();
-        }
+    /// Panics if `Renderer::copy` would panic, given the texture of the
+    /// label.
+    pub fn render(&self, renderer: &mut Renderer, x: i32, y: i32) {
+        let (w, h) = self.size;
+        let dst = Rect::new(x, y, w, h);
+        renderer.copy(&self.texture, None, Some(dst));
     }
 
     /// Returns the size of the label in terms of the renderer.
@@ -88,47 +63,23 @@ impl Label {
         self.size
     }
 
-    /// Returns the width of the label in terms of the renderer.
-    #[inline]
-    pub fn width(&self) -> u32 {
-        self.size.0
-    }
-
-    /// Returns the height of the label in terms of the renderer.
-    #[inline]
-    pub fn height(&self) -> u32 {
-        self.size.1
-    }
-
     /// Returns the cached texture, if any.
     #[inline]
-    pub fn texture(&self) -> Option<&Texture> {
-        match self.state {
-            State::Cached(ref texture) => Some(texture),
-            _ => None,
-        }
+    pub fn texture(&self) -> &Texture {
+        &self.texture
     }
 
-    /// Returns the text to be renderered.
     #[inline]
-    pub fn text(&self) -> &str {
-        &self.text
-    }
-
-    /// Returns the font to render the label with.
-    #[inline]
-    pub fn font(&self) -> Rc<Font> {
-        self.font.clone()
+    pub fn into_texture(self) -> Texture {
+        self.texture
     }
 }
 
 impl Debug for Label {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("Label")
-            .field("text", &self.text)
             .field("size", &self.size)
-            .field("font", &(..))
-            .field("state", &(..))
+            .field("texture", &(..))
             .finish()
     }
 }
