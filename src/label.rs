@@ -2,9 +2,9 @@ use std::fmt::{self, Debug};
 
 use sdl2::render::Texture;
 use sdl2::rect::Rect;
-use sdl2::pixels::Color;
 use sdl2_ttf::Font;
 
+use color::Color;
 use device::Device;
 use renderer::Renderer;
 
@@ -27,10 +27,9 @@ impl Label {
     /// Panics if `text` cannot be rendered by `font`, e.g. if the
     /// the font does not contain the needed glyphs.
     #[inline]
-    pub fn new(font: &Font, text: &str, color: (u8, u8, u8, u8), device: &Device) -> Label {
-        let (r, g, b, a) = color;
+    pub fn new(font: &Font, text: &str, color: Color, device: &Device) -> Label {
         let surface = font.render(text)
-            .blended(Color::RGBA(r, g, b, a))
+            .blended(color)
             .expect("could not render label");
 
         let (tw, th) = surface.size();
