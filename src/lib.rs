@@ -8,22 +8,25 @@ extern crate sdl2;
 extern crate sdl2_image;
 extern crate sdl2_ttf;
 
-mod limiter;
-mod sprite;
-mod label;
-mod input;
-mod game;
-mod gameobject;
 #[macro_use]
 mod macros;
+
+mod device;
+mod game;
+mod gameobject;
+mod input;
+mod label;
+mod limiter;
+mod sprite;
 mod renderer;
 mod resources;
 
+pub use device::Device;
 pub use game::Game;
 pub use gameobject::Behavior;
 pub use input::{InputManager, InputPattern, BoxedInputMapper};
 pub use label::Label;
 pub use limiter::FrameLimiter;
-pub use renderer::{init_renderer, Device, Renderer};
+pub use renderer::Renderer;
 pub use resources::ResourceManager;
 pub use sprite::Sprite;

@@ -9,16 +9,16 @@ use limiter::FrameLimiter;
 use renderer::Renderer;
 
 /// The state needed for a game.
-pub struct Game<'a> {
+pub struct Game<'a, 'r: 'a> {
     limiter: FrameLimiter,
-    renderer: Renderer<'a>,
+    renderer: Renderer<'a, 'r>,
     event_pump: EventPump,
     clear_color: Color,
 }
 
-impl<'a> Game<'a> {
+impl<'a, 'r> Game<'a, 'r> {
     /// Creates a new game.
-    pub fn new(fps: u32, renderer: Renderer<'a>, event_pump: EventPump) -> Self {
+    pub fn new(fps: u32, renderer: Renderer<'a, 'r>, event_pump: EventPump) -> Self {
         Game {
             limiter: FrameLimiter::new(fps),
             clear_color: Color::RGBA(255, 255, 255, 255),

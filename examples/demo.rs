@@ -6,7 +6,7 @@ extern crate sdl2_image;
 use std::path::Path;
 use std::rc::Rc;
 
-use glorious::{Behavior, BoxedInputMapper, Game, Renderer, Sprite};
+use glorious::{Behavior, BoxedInputMapper, Device, Game, Renderer, Sprite};
 use sdl2::keyboard::{Keycode, Scancode};
 use sdl2::rect::Rect;
 use sdl2_image::{INIT_PNG, INIT_JPG};
@@ -40,8 +40,8 @@ struct Player {
 }
 
 impl Player {
-    pub fn new(x: i32, y: i32, renderer: &mut Renderer) -> Self {
-        let texture = renderer.load_texture(&Path::new(PLAYER_TEXTURE))
+    pub fn new(x: i32, y: i32, device: &Device) -> Self {
+        let texture = device.load_texture(&Path::new(PLAYER_TEXTURE))
             .expect("Could not load the player texture");
         Player {
             vx: 0,
@@ -220,14 +220,15 @@ fn main() {
         .build()
         .unwrap();
 
-    let (_, mut renderer) = glorious::init_renderer(window.renderer().build().unwrap());
+    let device = Device::new(window.renderer().build().unwrap());
+    let renderer = device.create_renderer();
 
     // Initialize the game state
     let mut state = GameState::new();
     state.example = "A new value for the state :u";
 
     let mut logic = GameLogic::new();
-    let player = Player::new(50, 50, &mut renderer);
+    let player = Player::new(50, 50, &device);
     logic.add(Box::new(player));
 
     let mut mapper = BoxedInputMapper::new();

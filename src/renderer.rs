@@ -1,141 +1,36 @@
 #![allow(missing_docs)]
 
-use std::cell::{Ref, RefCell, RefMut};
-use std::ops::Deref;
-use std::path::Path;
-use std::rc::Rc;
+use std::cell::{Ref, RefMut};
 
-use ref_filter_map::{ref_filter_map, ref_mut_filter_map};
 use sdl2::pixels::{Color, PixelFormatEnum};
 use sdl2::rect::{Point, Rect};
-use sdl2::render::{BlendMode, Renderer as SdlRenderer, RendererInfo, Texture, TextureAccess,
-                   TextureValueError};
-use sdl2::surface::SurfaceRef;
-use sdl2::video::WindowRef;
-use sdl2_image::LoadTexture;
+use sdl2::render::{BlendMode, Renderer as SdlRenderer, Texture};
 
-pub fn init_renderer(renderer: SdlRenderer) -> (Device, Renderer) {
-    let rc = Rc::new(RefCell::new(renderer));
-    let device = Device { inner: rc.clone() };
-    let renderer = Renderer { device: Device { inner: rc } };
-    (device, renderer)
+use device::Device;
+
+#[inline]
+pub fn create_renderer<'a, 'r: 'a>(device: &'a Device<'r>) -> Renderer<'a, 'r> {
+    Renderer { device: device }
 }
 
-pub struct Device<'a> {
-    inner: Rc<RefCell<SdlRenderer<'a>>>,
+pub struct Renderer<'a, 'r: 'a> {
+    device: &'a Device<'r>,
 }
 
-impl<'a> Device<'a> {
+impl<'a, 'r> Renderer<'a, 'r> {
     #[inline]
-    pub fn borrow(&self) -> Ref<SdlRenderer<'a>> {
-        self.inner.borrow()
+    pub fn borrow(&self) -> Ref<SdlRenderer<'r>> {
+        self.device.borrow()
     }
 
     #[inline]
-    pub fn info(&self) -> RendererInfo {
-        self.borrow().info()
+    pub fn borrow_mut(&self) -> RefMut<SdlRenderer<'r>> {
+        self.device.borrow_mut()
     }
 
     #[inline]
-    pub fn borrow_window(&self) -> Option<Ref<WindowRef>> {
-        ref_filter_map(self.borrow(), |r| r.window())
-    }
-
-    #[inline]
-    pub fn borrow_surface(&self) -> Option<Ref<SurfaceRef>> {
-        ref_filter_map(self.borrow(), |r| r.surface())
-    }
-
-    #[inline]
-    pub fn load_texture<P>(&self, path: P) -> Result<Texture, String>
-        where P: AsRef<Path>
-    {
-        self.borrow().load_texture(path.as_ref())
-    }
-
-    #[inline]
-    pub fn create_texture(&self,
-                          format: PixelFormatEnum,
-                          access: TextureAccess,
-                          width: u32,
-                          height: u32)
-                          -> Result<Texture, TextureValueError> {
-        self.borrow().create_texture(format, access, width, height)
-    }
-
-    #[inline]
-    pub fn create_texture_static(&self,
-                                 format: PixelFormatEnum,
-                                 width: u32,
-                                 height: u32)
-                                 -> Result<Texture, TextureValueError> {
-        self.borrow().create_texture_static(format, width, height)
-    }
-
-    #[inline]
-    pub fn create_texture_streaming(&self,
-                                    format: PixelFormatEnum,
-                                    width: u32,
-                                    height: u32)
-                                    -> Result<Texture, TextureValueError> {
-        self.borrow().create_texture_streaming(format, width, height)
-    }
-
-    #[inline]
-    pub fn create_texture_target(&self,
-                                 format: PixelFormatEnum,
-                                 width: u32,
-                                 height: u32)
-                                 -> Result<Texture, TextureValueError> {
-        self.borrow().create_texture_target(format, width, height)
-    }
-
-    #[inline]
-    pub fn create_texture_from_surface<S>(&self, surface: S) -> Result<Texture, TextureValueError>
-        where S: AsRef<SurfaceRef>
-    {
-        self.borrow().create_texture_from_surface(surface)
-    }
-
-    #[inline]
-    pub fn scale(&self) -> (f32, f32) {
-        self.borrow().scale()
-    }
-
-    #[inline]
-    pub fn output_size(&self) -> Result<(u32, u32), String> {
-        self.borrow().output_size()
-    }
-
-    #[inline]
-    pub fn logical_size(&self) -> (u32, u32) {
-        self.borrow().logical_size()
-    }
-
-    #[inline]
-    pub fn viewport(&self) -> Rect {
-        self.borrow().viewport()
-    }
-}
-
-pub struct Renderer<'a> {
-    device: Device<'a>,
-}
-
-impl<'a> Renderer<'a> {
-    #[inline]
-    pub fn borrow_mut(&mut self) -> RefMut<SdlRenderer<'a>> {
-        self.device.inner.borrow_mut()
-    }
-
-    #[inline]
-    pub fn borrow_window_mut(&mut self) -> Option<RefMut<WindowRef>> {
-        ref_mut_filter_map(self.borrow_mut(), |r| r.window_mut())
-    }
-
-    #[inline]
-    pub fn borrow_surface_mut(&mut self) -> Option<RefMut<SurfaceRef>> {
-        ref_mut_filter_map(self.borrow_mut(), |r| r.surface_mut())
+    pub fn device(&self) -> &'a Device<'r> {
+        self.device
     }
 
     #[inline]
@@ -248,13 +143,5 @@ impl<'a> Renderer<'a> {
                        format: PixelFormatEnum)
                        -> Result<Vec<u8>, String> {
         self.borrow().read_pixels(rect, format)
-    }
-}
-
-impl<'a> Deref for Renderer<'a> {
-    type Target = Device<'a>;
-
-    fn deref(&self) -> &Device<'a> {
-        &self.device
     }
 }

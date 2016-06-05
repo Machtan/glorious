@@ -5,7 +5,8 @@ use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 use sdl2_ttf::Font;
 
-use renderer::{Device, Renderer};
+use device::Device;
+use renderer::Renderer;
 
 /// A text label.
 pub struct Label {

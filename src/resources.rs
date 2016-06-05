@@ -8,33 +8,33 @@ use std::rc::Rc;
 use sdl2::render::Texture;
 use sdl2_ttf::{Sdl2TtfContext, Font};
 
-use renderer::Device;
+use device::Device;
 
 // This hack allows us to index the `HashMap` with tuples of unowned strings.
 type FontId = (Cow<'static, str>, u16);
 
 /// A resource manager responsible for loading and caching assets.
 #[derive(Clone)]
-pub struct ResourceManager<'a, 'd: 'a> {
+pub struct ResourceManager<'a, 'r: 'a> {
     prefix: PathBuf,
-    device: &'a Device<'d>,
+    device: &'a Device<'r>,
     ttf_ctx: &'a Sdl2TtfContext,
     textures: RefCell<HashMap<String, Rc<Texture>>>,
     fonts: RefCell<HashMap<FontId, Rc<Font>>>,
 }
 
-impl<'a, 'd> ResourceManager<'a, 'd> {
+impl<'a, 'r> ResourceManager<'a, 'r> {
     /// Creates a new resource manager.
     ///
     /// The `renderer` and `ttf_ctx` are used when loading assets.
-    pub fn new(device: &'a Device<'d>, ttf_ctx: &'a Sdl2TtfContext) -> ResourceManager<'a, 'd> {
+    pub fn new(device: &'a Device<'r>, ttf_ctx: &'a Sdl2TtfContext) -> ResourceManager<'a, 'r> {
         ResourceManager::with_prefix("", device, ttf_ctx)
     }
 
     pub fn with_prefix<P>(prefix: P,
-                          device: &'a Device<'d>,
+                          device: &'a Device<'r>,
                           ttf_ctx: &'a Sdl2TtfContext)
-                          -> ResourceManager<'a, 'd>
+                          -> ResourceManager<'a, 'r>
         where P: Into<PathBuf>
     {
         ResourceManager {
@@ -102,7 +102,7 @@ impl<'a, 'd> ResourceManager<'a, 'd> {
 
     /// Returns the renderer this resource manager was created with.
     #[inline]
-    pub fn device(&self) -> &'a Device<'d> {
+    pub fn device(&self) -> &'a Device<'r> {
         self.device
     }
 
@@ -131,7 +131,7 @@ impl<I> Debug for IterDebug<I>
     }
 }
 
-impl<'a, 'd> Debug for ResourceManager<'a, 'd> {
+impl<'a, 'r> Debug for ResourceManager<'a, 'r> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("ResourceManager")
             .field("textures", &IterDebug(self.textures.borrow().keys()))
