@@ -11,6 +11,7 @@ extern crate sdl2_ttf;
 #[macro_use]
 mod macros;
 
+mod color;
 mod device;
 mod game;
 mod gameobject;
@@ -21,6 +22,7 @@ mod sprite;
 mod renderer;
 mod resources;
 
+pub use color::Color;
 pub use device::Device;
 pub use game::Game;
 pub use gameobject::Behavior;

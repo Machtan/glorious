@@ -2,10 +2,11 @@
 
 use std::cell::{Ref, RefMut};
 
-use sdl2::pixels::{Color, PixelFormatEnum};
+use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::{Point, Rect};
 use sdl2::render::{BlendMode, Renderer as SdlRenderer, Texture};
 
+use color::Color;
 use device::Device;
 
 #[inline]
@@ -35,12 +36,12 @@ impl<'a, 'r> Renderer<'a, 'r> {
 
     #[inline]
     pub fn set_draw_color(&mut self, color: Color) {
-        self.borrow_mut().set_draw_color(color);
+        self.borrow_mut().set_draw_color(color.into());
     }
 
     #[inline]
     pub fn draw_color(&self) -> Color {
-        self.borrow().draw_color()
+        self.borrow().draw_color().into()
     }
 
     #[inline]

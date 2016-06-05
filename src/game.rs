@@ -1,8 +1,8 @@
 use std::mem;
 
 use sdl2::EventPump;
-use sdl2::pixels::Color;
 
+use color::Color;
 use gameobject::Behavior;
 use input::InputManager;
 use limiter::FrameLimiter;
@@ -21,7 +21,7 @@ impl<'a, 'r> Game<'a, 'r> {
     pub fn new(fps: u32, renderer: Renderer<'a, 'r>, event_pump: EventPump) -> Self {
         Game {
             limiter: FrameLimiter::new(fps),
-            clear_color: Color::RGBA(255, 255, 255, 255),
+            clear_color: Color(255, 255, 255, 255),
             renderer: renderer,
             event_pump: event_pump,
         }
