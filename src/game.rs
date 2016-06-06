@@ -19,9 +19,17 @@ pub struct Game<'a, 'r: 'a> {
 impl<'a, 'r> Game<'a, 'r> {
     /// Creates a new game.
     pub fn new(fps: u32, renderer: Renderer<'a, 'r>, event_pump: EventPump) -> Self {
+        Game::with_clear_color(Color(0xff, 0xff, 0xff, 0xff), fps, renderer, event_pump)
+    }
+
+    pub fn with_clear_color(color: Color,
+                            fps: u32,
+                            renderer: Renderer<'a, 'r>,
+                            event_pump: EventPump)
+                            -> Self {
         Game {
             limiter: FrameLimiter::new(fps),
-            clear_color: Color(255, 255, 255, 255),
+            clear_color: color,
             renderer: renderer,
             event_pump: event_pump,
         }
