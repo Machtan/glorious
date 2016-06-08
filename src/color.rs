@@ -8,7 +8,7 @@ impl Color {
     pub fn mul_alpha(self, alpha: u8) -> Color {
         let Color(r, g, b, a) = self;
         let mul: u16 = a as u16 * alpha as u16;
-        Color(r, g, b, (mul / 0x100) as u8)
+        Color(r, g, b, (mul / 0xff) as u8)
     }
 }
 
