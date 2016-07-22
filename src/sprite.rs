@@ -1,9 +1,9 @@
 use std::rc::Rc;
 use std::fmt::{self, Debug};
-use sdl2::rect::Rect;
 use sdl2::render::{Texture, TextureQuery};
 
 use renderer::Renderer;
+use rect::Rect;
 
 /// A rectangular section of a texture rendered on its own.
 #[derive(Clone)]
@@ -18,8 +18,8 @@ impl Sprite {
     ///
     /// The sprite corresponds to the section of `texture` specified by
     /// `rect`, or the entire texture, if `rect` is `None`.
-    pub fn new(texture: Rc<Texture>, rect: Option<Rect>) -> Sprite {
-        let rect = rect.unwrap_or_else(|| {
+    pub fn new<R: Into<Rect>>(texture: Rc<Texture>, rect: Option<R>) -> Sprite {
+        let rect = rect.map(|r| r.into()).unwrap_or_else(|| {
             let TextureQuery { width, height, .. } = texture.query();
             Rect::new(0, 0, width, height)
         });
@@ -38,13 +38,13 @@ impl Sprite {
     /// Panics if drawing fails for any reason (e.g. driver failure), or
     /// if the provided texture does not belong to the renderer.
     pub fn render(&self, renderer: &mut Renderer, x: i32, y: i32, size: Option<(u32, u32)>) {
-        let (w, h) = size.unwrap_or_else(|| (self.rect.width(), self.rect.height()));
+        let (w, h) = size.unwrap_or_else(|| (self.rect.width, self.rect.height));
         let dst = Rect::new(x, y, w, h);
         renderer.copy(&*self.texture, Some(self.rect), Some(dst));
     }
 
-    pub fn render_rect(&self, renderer: &mut Renderer, rect: Rect) {
-        renderer.copy(&*self.texture, Some(self.rect), Some(rect));
+    pub fn render_rect<R: Into<Rect>>(&self, renderer: &mut Renderer, rect: R) {
+        renderer.copy(&*self.texture, Some(self.rect), Some(rect.into()));
     }
 }
 

@@ -1,9 +1,9 @@
 use std::fmt::{self, Debug};
 
 use sdl2::render::Texture;
-use sdl2::rect::Rect;
 use sdl2_ttf::Font;
 
+use rect::Rect;
 use color::Color;
 use device::Device;
 use renderer::Renderer;

@@ -29,3 +29,19 @@ impl From<Color> for SdlColor {
         SdlColor::RGBA(r, g, b, a)
     }
 }
+
+impl From<(u8, u8, u8)> for Color {
+    #[inline]
+    fn from(color: (u8, u8, u8)) -> Color {
+        let (r, g, b) = color;
+        Color(r, g, b, 255)
+    }
+}
+
+impl From<(u8, u8, u8, u8)> for Color {
+    #[inline]
+    fn from(color: (u8, u8, u8, u8)) -> Color {
+        let (r, g, b, a) = color;
+        Color(r, g, b, a)
+    }
+}

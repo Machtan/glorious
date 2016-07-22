@@ -5,7 +5,6 @@ use std::path::Path;
 
 use ref_filter_map::{ref_filter_map, ref_mut_filter_map};
 use sdl2::pixels::PixelFormatEnum;
-use sdl2::rect::Rect;
 use sdl2::render::{Renderer as SdlRenderer, RendererInfo, Texture, TextureAccess,
                    TextureValueError};
 use sdl2::surface::SurfaceRef;
@@ -13,6 +12,7 @@ use sdl2::video::WindowRef;
 use sdl2_image::LoadTexture;
 
 use renderer::{create_renderer, Renderer};
+use rect::Rect;
 
 pub struct Device<'r> {
     inner: RefCell<SdlRenderer<'r>>,
@@ -67,7 +67,7 @@ impl<'r> Device<'r> {
     }
 
     #[inline]
-    pub fn borrow_window_mut(&mut self) -> Option<RefMut<WindowRef>> {
+    pub fn borrow_window_mut(&self) -> Option<RefMut<WindowRef>> {
         ref_mut_filter_map(self.borrow_mut(), |r| r.window_mut())
     }
 
@@ -144,6 +144,6 @@ impl<'r> Device<'r> {
 
     #[inline]
     pub fn viewport(&self) -> Rect {
-        self.borrow().viewport()
+        self.borrow().viewport().into()
     }
 }

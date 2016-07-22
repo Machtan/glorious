@@ -19,6 +19,7 @@ mod input;
 mod label;
 mod limiter;
 mod sprite;
+mod rect;
 mod renderer;
 mod resources;
 
@@ -32,3 +33,4 @@ pub use limiter::FrameLimiter;
 pub use renderer::Renderer;
 pub use resources::ResourceManager;
 pub use sprite::Sprite;
+pub use rect::Rect;
