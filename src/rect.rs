@@ -106,7 +106,7 @@ impl Rect {
     }
 
     #[inline]
-    pub fn distance_to_x(&self, x: i32) -> Option<u32> {
+    pub fn horizontal_distance(&self, x: i32) -> Option<u32> {
         if x >= self.right() {
             Some((x - self.right()) as u32)
         } else if x <= self.left() {
@@ -117,7 +117,7 @@ impl Rect {
     }
 
     #[inline]
-    pub fn distance_to_y(&self, y: i32) -> Option<u32> {
+    pub fn vertical_distance(&self, y: i32) -> Option<u32> {
         if y <= self.top() {
             Some((self.top() - y) as u32)
         } else if y >= self.bottom() {
@@ -128,7 +128,7 @@ impl Rect {
     }
 
     #[inline]
-    pub fn overlap_with(&self, other: Rect) -> Option<(u32, u32)> {
+    pub fn overlap_size(&self, other: Rect) -> Option<(u32, u32)> {
         if !self.intersects(other) {
             return None;
         }
@@ -150,7 +150,7 @@ impl Rect {
     }
 
     #[inline]
-    pub fn x_overlap_with(&self, other: Rect) -> Option<u32> {
+    pub fn overlap_width(&self, other: Rect) -> Option<u32> {
         if !self.intersects(other) {
             return None;
         }
@@ -167,7 +167,7 @@ impl Rect {
     }
 
     #[inline]
-    pub fn y_overlap_with(&self, other: Rect) -> Option<u32> {
+    pub fn overlap_height(&self, other: Rect) -> Option<u32> {
         if !self.intersects(other) {
             return None;
         }

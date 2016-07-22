@@ -67,12 +67,12 @@ impl<'a, 'r> Renderer<'a, 'r> {
     }
 
     #[inline]
-    pub fn set_clip_rect<R: Into<Sdl2Rect>>(&mut self, rect: Option<R>) {
+    pub fn set_clip_rect(&mut self, rect: Option<Rect>) {
         self.borrow_mut().set_clip_rect(rect.map(|r| r.into()));
     }
 
     #[inline]
-    pub fn set_viewport<R: Into<Sdl2Rect>>(&mut self, rect: Option<R>) {
+    pub fn set_viewport(&mut self, rect: Option<Rect>) {
         self.borrow_mut().set_viewport(rect.map(|r| r.into()));
     }
 
@@ -107,7 +107,7 @@ impl<'a, 'r> Renderer<'a, 'r> {
     }
 
     #[inline]
-    pub fn draw_rect<R: Into<Sdl2Rect>>(&mut self, rect: R) -> Result<(), String> {
+    pub fn draw_rect(&mut self, rect: Rect) -> Result<(), String> {
         self.borrow_mut().draw_rect(rect.into())
     }
 
@@ -117,7 +117,7 @@ impl<'a, 'r> Renderer<'a, 'r> {
     }
 
     #[inline]
-    pub fn fill_rect<R: Into<Sdl2Rect>>(&mut self, rect: R) -> Result<(), String> {
+    pub fn fill_rect(&mut self, rect: Rect) -> Result<(), String> {
         self.borrow_mut().fill_rect(rect.into())
     }
 
@@ -127,20 +127,20 @@ impl<'a, 'r> Renderer<'a, 'r> {
     }
 
     #[inline]
-    pub fn copy<R: Into<Sdl2Rect>>(&mut self, texture: &Texture, src: Option<R>, dst: Option<R>) {
+    pub fn copy(&mut self, texture: &Texture, src: Option<Rect>, dst: Option<Rect>) {
         self.borrow_mut().copy(texture, src.map(|r| r.into()), dst.map(|r| r.into()));
     }
 
     #[inline]
-    pub fn copy_ex<R: Into<Sdl2Rect>>(&mut self,
-                                      texture: &Texture,
-                                      src: Option<R>,
-                                      dst: Option<R>,
-                                      angle: f64,
-                                      center: Option<Point>,
-                                      flip_horizontal: bool,
-                                      flip_vertical: bool)
-                                      -> Result<(), String> {
+    pub fn copy_ex(&mut self,
+                   texture: &Texture,
+                   src: Option<Rect>,
+                   dst: Option<Rect>,
+                   angle: f64,
+                   center: Option<Point>,
+                   flip_horizontal: bool,
+                   flip_vertical: bool)
+                   -> Result<(), String> {
         self.borrow_mut().copy_ex(texture,
                                   src.map(|r| r.into()),
                                   dst.map(|r| r.into()),
@@ -151,10 +151,10 @@ impl<'a, 'r> Renderer<'a, 'r> {
     }
 
     #[inline]
-    pub fn read_pixels<R: Into<Sdl2Rect>>(&self,
-                                          rect: Option<R>,
-                                          format: PixelFormatEnum)
-                                          -> Result<Vec<u8>, String> {
+    pub fn read_pixels(&self,
+                       rect: Option<Rect>,
+                       format: PixelFormatEnum)
+                       -> Result<Vec<u8>, String> {
         self.borrow().read_pixels(rect.map(|r| r.into()), format)
     }
 }
