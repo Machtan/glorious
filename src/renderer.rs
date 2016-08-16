@@ -4,7 +4,7 @@ use std::cell::{Ref, RefMut};
 
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::Point;
-use sdl2::rect::Rect as Sdl2Rect;
+use sdl2::rect::Rect as SdlRect;
 use sdl2::render::{BlendMode, Renderer as SdlRenderer, Texture};
 use rect::Rect;
 
@@ -112,7 +112,7 @@ impl<'a, 'r> Renderer<'a, 'r> {
     }
 
     #[inline]
-    pub fn draw_rects(&mut self, rects: &[Sdl2Rect]) -> Result<(), String> {
+    pub fn draw_rects(&mut self, rects: &[SdlRect]) -> Result<(), String> {
         self.borrow_mut().draw_rects(rects)
     }
 
@@ -122,7 +122,7 @@ impl<'a, 'r> Renderer<'a, 'r> {
     }
 
     #[inline]
-    pub fn fill_rects(&mut self, rects: &[Sdl2Rect]) -> Result<(), String> {
+    pub fn fill_rects(&mut self, rects: &[SdlRect]) -> Result<(), String> {
         self.borrow_mut().fill_rects(rects)
     }
 

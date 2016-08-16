@@ -1,4 +1,3 @@
-extern crate sdl2;
 use sdl2::rect::Rect as Sdl2Rect;
 
 #[derive(Debug, Clone, Copy)]
@@ -256,7 +255,6 @@ impl Rect {
         (self.right(), self.bottom())
     }
 }
-
 
 impl Into<Sdl2Rect> for Rect {
     fn into(self) -> Sdl2Rect {
