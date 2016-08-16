@@ -18,8 +18,8 @@ impl Sprite {
     ///
     /// The sprite corresponds to the section of `texture` specified by
     /// `rect`, or the entire texture, if `rect` is `None`.
-    pub fn new<R: Into<Rect>>(texture: Rc<Texture>, rect: Option<Rect>) -> Sprite {
-        let rect = rect.map(|r| r.into()).unwrap_or_else(|| {
+    pub fn new(texture: Rc<Texture>, rect: Option<Rect>) -> Sprite {
+        let rect = rect.unwrap_or_else(|| {
             let TextureQuery { width, height, .. } = texture.query();
             Rect::new(0, 0, width, height)
         });
